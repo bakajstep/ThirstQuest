@@ -16,9 +16,9 @@ public class WaterBubbler {
 
     private String name;
 
-    private double lat;
+    private double latitude;
 
-    private double lon;
+    private double longitude;
 
     @ManyToOne
     @JoinColumn(name = "user_id") // foreign key to User
@@ -54,20 +54,20 @@ public class WaterBubbler {
         this.name = name;
     }
 
-    public double getLat() {
-        return lat;
+    public double getLatitude() {
+        return latitude;
     }
 
-    public void setLat(double lat) {
-        this.lat = lat;
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
     }
 
-    public double getLon() {
-        return lon;
+    public double getLongitude() {
+        return longitude;
     }
 
-    public void setLon(double lon) {
-        this.lon = lon;
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
     }
 
     public AppUser getUser() {

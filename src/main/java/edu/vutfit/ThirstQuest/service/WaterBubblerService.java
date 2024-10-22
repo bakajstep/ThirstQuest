@@ -39,8 +39,8 @@ public class WaterBubblerService {
         return waterBubblerRepository.findById(id)
                 .map(bubbler -> {
                     bubbler.setName(updatedBubbler.getName());
-                    bubbler.setLat(updatedBubbler.getLat());
-                    bubbler.setLon(updatedBubbler.getLon());
+                    bubbler.setLatitude(updatedBubbler.getLatitude());
+                    bubbler.setLongitude(updatedBubbler.getLongitude());
                     return waterBubblerRepository.save(bubbler);
                 }).orElse(null);
     }

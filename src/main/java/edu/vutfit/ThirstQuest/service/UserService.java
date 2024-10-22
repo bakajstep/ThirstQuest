@@ -3,6 +3,7 @@ package edu.vutfit.ThirstQuest.service;
 import edu.vutfit.ThirstQuest.model.AppUser;
 import edu.vutfit.ThirstQuest.repository.AppUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -15,11 +16,11 @@ import java.util.UUID;
 @Service
 public class UserService implements UserDetailsService {
 
-
     @Autowired
     private AppUserRepository appUserRepository;
 
     @Autowired
+    @Lazy
     private BCryptPasswordEncoder passwordEncoder;
 
     @Override
@@ -57,7 +58,7 @@ public class UserService implements UserDetailsService {
         return appUserRepository.findAll();
     }
 
-    public AppUser findByEmail(String email) {
+    public AppUser getByEmail(String email) {
         return appUserRepository.findByEmail(email);
     }
 
