@@ -3,10 +3,12 @@ package edu.vutfit.ThirstQuest.service;
 import edu.vutfit.ThirstQuest.model.AppUser;
 import edu.vutfit.ThirstQuest.model.WaterBubbler;
 import edu.vutfit.ThirstQuest.repository.WaterBubblerRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.ArrayList;
 import java.util.UUID;
 
 @Service
@@ -15,8 +17,29 @@ public class WaterBubblerService {
     @Autowired
     private WaterBubblerRepository waterBubblerRepository;
 
-    public List<WaterBubbler> getAllWaterBubblers() {
-        return waterBubblerRepository.findAll();
+    @Autowired
+    private WaterBubblerOSMService waterBubblerOSMService;
+
+    public List<WaterBubbler> getWaterBubblersWithinCoordinates(double minLon, double maxLon, double minLat, double maxLat) {
+        List<WaterBubbler> osmWaterBubblers = waterBubblerOSMService.getWaterBubblersWithinCoordinatesFromOsm(minLon, maxLon, minLat, maxLat);
+        List<WaterBubbler> waterBubblers = waterBubblerRepository.findByLongitudeBetweenAndLatitudeBetween(minLon, maxLon, minLat, maxLat);
+
+        for (WaterBubbler osmWaterBubbler : osmWaterBubblers) {
+            WaterBubbler existing = waterBubblers.stream().filter(waterBubbler -> waterBubbler.getOpenStreetId() == osmWaterBubbler.getOpenStreetId()).findFirst().orElse(null);
+            if (existing == null) {
+                waterBubblers.add(osmWaterBubbler);
+                continue;
+            }
+
+            var photos = existing.getPhotos();
+            if (photos == null) {
+                existing.setPhotos(new ArrayList<>());
+            }
+
+            existing.getPhotos().addAll(osmWaterBubbler.getPhotos());
+        }
+
+        return waterBubblers;
     }
 
     public WaterBubbler getWaterBubblerById(UUID id) {
@@ -41,6 +64,7 @@ public class WaterBubblerService {
                     bubbler.setName(updatedBubbler.getName());
                     bubbler.setLatitude(updatedBubbler.getLatitude());
                     bubbler.setLongitude(updatedBubbler.getLongitude());
+                    bubbler.setDesc(updatedBubbler.getDesc());
                     return waterBubblerRepository.save(bubbler);
                 }).orElse(null);
     }

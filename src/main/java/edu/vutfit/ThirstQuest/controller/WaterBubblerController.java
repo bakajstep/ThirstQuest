@@ -21,8 +21,13 @@ public class WaterBubblerController {
     private UserService userService;
 
     @GetMapping
-    public List<WaterBubbler> getAllWaterBubblers() {
-        return waterBubblerService.getAllWaterBubblers();
+    public List<WaterBubbler> getAllWaterBubblers(
+        @RequestParam double minLat,
+        @RequestParam double maxLat,
+        @RequestParam double minLon,
+        @RequestParam double maxLon
+    ) {
+        return waterBubblerService.getWaterBubblersWithinCoordinates(minLon, maxLon, minLat, maxLat);
     }
 
     @GetMapping("/{id}")

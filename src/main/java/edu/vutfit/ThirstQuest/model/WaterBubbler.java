@@ -16,6 +16,8 @@ public class WaterBubbler {
 
     private String name;
 
+    private String desc;
+
     private double latitude;
 
     private double longitude;
@@ -34,63 +36,80 @@ public class WaterBubbler {
         return id;
     }
 
-    public void setId(UUID id) {
+    public WaterBubbler setId(UUID id) {
         this.id = id;
+        return this;
     }
 
     public Long getOpenStreetId() {
         return openStreetId;
     }
 
-    public void setOpenStreetId(Long openStreetId) {
+    public WaterBubbler setOpenStreetId(Long openStreetId) {
         this.openStreetId = openStreetId;
+        return this;
     }
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
+    public WaterBubbler setName(String name) {
         this.name = name;
+        return this;
+    }
+
+    public String getDesc() {
+        return desc;
+    }
+
+    public WaterBubbler setDesc(String desc) {
+        this.desc = desc;
+        return this;
     }
 
     public double getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(double latitude) {
+    public WaterBubbler setLatitude(double latitude) {
         this.latitude = latitude;
+        return this;
     }
 
     public double getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(double longitude) {
+    public WaterBubbler setLongitude(double longitude) {
         this.longitude = longitude;
+        return this;
     }
 
     public AppUser getUser() {
         return user;
     }
 
-    public void setUser(AppUser appUser) {
+    public WaterBubbler setUser(AppUser appUser) {
         this.user = appUser;
+        return this;
     }
 
     public List<Review> getReviews() {
         return reviews;
     }
 
-    public void setReviews(List<Review> reviews) {
+    public WaterBubbler setReviews(List<Review> reviews) {
         this.reviews = reviews;
+        return this;
     }
 
     public List<Photo> getPhotos() {
         return photos;
     }
 
-    public void setPhotos(List<Photo> photos) {
+    public WaterBubbler setPhotos(List<Photo> photos) {
         this.photos = photos;
+        return this;
     }
 }

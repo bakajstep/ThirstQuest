@@ -15,8 +15,6 @@ public class Photo {
 
     private String url;
 
-    private String desc;
-
     @ManyToOne
     @JoinColumn(name = "user_id") // foreign key to User
     private AppUser user;
@@ -47,14 +45,6 @@ public class Photo {
 
     public void setUrl(String url) {
         this.url = url;
-    }
-
-    public String getDesc() {
-        return desc;
-    }
-
-    public void setDesc(String desc) {
-        this.desc = desc;
     }
 
     public AppUser getUser() {

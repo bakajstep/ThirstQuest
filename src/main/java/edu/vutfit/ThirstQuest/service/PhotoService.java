@@ -26,7 +26,6 @@ public class PhotoService {
                 .map(photo -> {
                     photo.setName(updatedPhoto.getName());
                     photo.setUrl(updatedPhoto.getUrl());
-                    photo.setDesc(updatedPhoto.getDesc());
                     return photoRepository.save(photo);
                 }).orElse(null);
     }
