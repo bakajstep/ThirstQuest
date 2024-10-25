@@ -33,12 +33,20 @@ public class AuthController {
         return new AuthResponse(
             JwtTokenUtil.generateToken(userDetails.getUsername()),
             "Bearer",
+            userService.getByEmail(userDetails.getUsername()),
             userDetails.getAuthorities().stream().map(a -> a.getAuthority()).toArray(String[]::new)
         );
     }
 
     @PostMapping("/register")
-    public AppUser register(@RequestBody AppUser appUser) {
-        return userService.saveUser(appUser);
+    public AuthResponse register(@RequestBody AppUser appUser) {
+        var user = userService.saveUser(appUser);
+
+        return new AuthResponse(
+            JwtTokenUtil.generateToken(user.getEmail()),
+            "Bearer",
+            user,
+            new String[] {}
+        );
     }
 }
