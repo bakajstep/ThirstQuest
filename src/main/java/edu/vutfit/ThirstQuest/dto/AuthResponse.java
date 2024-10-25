@@ -14,6 +14,7 @@ public class AuthResponse {
     public AuthResponse(String token, String schema, AppUser user, String[] role) {
         this.token = token;
         this.schema = schema;
+        this.user = user;
         this.role = role;
     }
 
