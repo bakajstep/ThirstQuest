@@ -28,8 +28,8 @@ public class AuthController {
         var authentication = authenticationManager.authenticate(
             new UsernamePasswordAuthenticationToken(authRequest.getEmail(), authRequest.getPassword())
         );
-
         UserDetails userDetails = (UserDetails)authentication.getPrincipal();
+
         return new AuthResponse(
             JwtTokenUtil.generateToken(userDetails.getUsername()),
             "Bearer",
@@ -41,12 +41,13 @@ public class AuthController {
     @PostMapping("/register")
     public AuthResponse register(@RequestBody AppUser appUser) {
         var user = userService.saveUser(appUser);
+        var userDetails = userService.loadUserByUsername(user.getEmail());
 
         return new AuthResponse(
             JwtTokenUtil.generateToken(user.getEmail()),
             "Bearer",
             user,
-            new String[] {}
+            userDetails.getAuthorities().stream().map(a -> a.getAuthority()).toArray(String[]::new)
         );
     }
 }
