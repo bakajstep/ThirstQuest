@@ -3,6 +3,7 @@ package edu.vutfit.ThirstQuest.model;
 import jakarta.persistence.*;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -33,6 +34,14 @@ public class AppUser {
 
     @OneToMany(mappedBy = "user")
     private List<Photo> photos;
+
+    @ManyToMany
+    @JoinTable(
+            name = "user_favorites",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "fountain_id")
+    )
+    private Set<WaterBubbler> favoriteBubblers;
 
     public List<Photo> getPhotos() {
         return photos;
@@ -104,5 +113,13 @@ public class AppUser {
 
     public void setProfilePicture(String profilePicture) {
         this.profilePicture = profilePicture;
+    }
+
+    public Set<WaterBubbler> getFavoriteBubblers() {
+        return favoriteBubblers;
+    }
+
+    public void setFavoriteBubblers(Set<WaterBubbler> favoriteFountains) {
+        this.favoriteBubblers = favoriteFountains;
     }
 }

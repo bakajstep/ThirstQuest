@@ -1,7 +1,9 @@
 package edu.vutfit.ThirstQuest.service;
 
 import edu.vutfit.ThirstQuest.model.AppUser;
+import edu.vutfit.ThirstQuest.model.WaterBubbler;
 import edu.vutfit.ThirstQuest.repository.AppUserRepository;
+import edu.vutfit.ThirstQuest.repository.WaterBubblerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,6 +13,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -18,6 +21,9 @@ public class UserService implements UserDetailsService {
 
     @Autowired
     private AppUserRepository appUserRepository;
+
+    @Autowired
+    private WaterBubblerRepository watterBubblerRepository;
 
     @Autowired
     @Lazy
@@ -88,5 +94,35 @@ public class UserService implements UserDetailsService {
             default:
                 throw new IllegalArgumentException("Invalid role: " + role);
         }
+    }
+
+    public void addFavoriteBubbler(UUID userId, UUID fountainId) {
+        Optional<AppUser> user = appUserRepository.findById(userId);
+        Optional<WaterBubbler> bubbler = watterBubblerRepository.findById(fountainId);
+
+        if (user.isEmpty()) {
+            throw new IllegalArgumentException("User not found");
+        }
+        if (bubbler.isEmpty()) {
+            throw new IllegalArgumentException("WaterBubbler not found");
+        }
+
+        user.get().getFavoriteBubblers().add(bubbler.get());
+        appUserRepository.save(user.get());
+    }
+
+    public void removeFavoriteBubbler(UUID userId, UUID fountainId) {
+        Optional<AppUser> user = appUserRepository.findById(userId);
+        Optional<WaterBubbler> bubbler = watterBubblerRepository.findById(fountainId);
+
+        if (user.isEmpty()) {
+            throw new IllegalArgumentException("User not found");
+        }
+        if (bubbler.isEmpty()) {
+            throw new IllegalArgumentException("WaterBubbler not found");
+        }
+
+        user.get().getFavoriteBubblers().remove(bubbler.get());
+        appUserRepository.save(user.get());
     }
 }
