@@ -22,6 +22,9 @@ public class AppUser {
     @Column(nullable = false)
     private int role;
 
+    @Column(length = 512)
+    private String profilePicture;
+
     @OneToMany(mappedBy = "user")
     private List<Review> reviews;
 
@@ -93,5 +96,13 @@ public class AppUser {
 
     public void setId(UUID id) {
         this.id = id;
+    }
+
+    public String getProfilePicture() {
+        return profilePicture;
+    }
+
+    public void setProfilePicture(String profilePicture) {
+        this.profilePicture = profilePicture;
     }
 }
