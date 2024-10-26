@@ -15,12 +15,19 @@ public class StatusController {
     @Value("${spring.application.name}")
     private String appName;
 
+    @Value("${spring.profiles.prod.spring.datasource.driverClassName}")
+    private String databaseProd;
+
     @GetMapping
     public Map<String, String> getStatus() {
         Map<String, String> status = new HashMap<>();
-        status.put("status", "running");
+        if (databaseProd != null) {
+            status.put("status", "running in production");
+        } else {
+            status.put("status", "running in development");
+        }
         status.put("message", "The server is up and running!");
-        status.put("name", appName); // Application name
+        status.put("name", appName);
         status.put("timestamp", String.valueOf(System.currentTimeMillis()));
         return status;
     }

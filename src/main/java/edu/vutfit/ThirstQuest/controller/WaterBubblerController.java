@@ -1,10 +1,13 @@
 package edu.vutfit.ThirstQuest.controller;
 
 import edu.vutfit.ThirstQuest.model.AppUser;
+import edu.vutfit.ThirstQuest.model.Review;
 import edu.vutfit.ThirstQuest.model.WaterBubbler;
+import edu.vutfit.ThirstQuest.repository.WaterBubblerRepository;
 import edu.vutfit.ThirstQuest.service.UserService;
 import edu.vutfit.ThirstQuest.service.WaterBubblerService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -46,8 +49,20 @@ public class WaterBubblerController {
     }
 
     @DeleteMapping("/{id}")
-    public void deleteWaterBubbler(@PathVariable UUID id) {
-        waterBubblerService.deleteWaterBubbler(id);
+    public String deleteWaterBubbler(@PathVariable UUID id, Authentication authentication) {
+        WaterBubbler waterBubbler = waterBubblerService.getWaterBubblerById(id);
+        String currentUserEmail = authentication.getName();
+
+        if (waterBubbler == null) {
+            return "Water bubbler not found";
+        }
+
+        // Only allow the owner of the water bubbler or an ADMIN to delete it
+        if (waterBubbler.getUser().getEmail().equals(currentUserEmail) || authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
+            waterBubblerService.deleteWaterBubbler(id);
+            return "Water bubbler deleted";
+        }
+        return "Unauthorized to delete this water bubbler";
     }
 
     @GetMapping("/user/{userId}")

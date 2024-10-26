@@ -21,6 +21,10 @@ public class PhotoService {
         photoRepository.deleteById(id);
     }
 
+    public Photo getPhotoById(UUID id) {
+        return photoRepository.findById(id).orElse(null);
+    }
+
     public Photo updatePhoto(UUID id, Photo updatedPhoto) {
         return photoRepository.findById(id)
                 .map(photo -> {
