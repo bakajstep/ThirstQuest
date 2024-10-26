@@ -6,6 +6,7 @@ import edu.vutfit.ThirstQuest.dto.AuthResponse;
 import edu.vutfit.ThirstQuest.model.AppUser;
 import edu.vutfit.ThirstQuest.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
@@ -39,15 +40,19 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public AuthResponse register(@RequestBody AppUser appUser) {
+    public ResponseEntity<?> register(@RequestBody AppUser appUser) {
         var user = userService.saveUser(appUser);
+        if (user == null) {
+            return ResponseEntity.badRequest().body("User already exists");
+        }
+
         var userDetails = userService.loadUserByUsername(user.getEmail());
 
-        return new AuthResponse(
+        return ResponseEntity.ok(new AuthResponse(
             JwtTokenUtil.generateToken(user.getEmail()),
             "Bearer",
             user,
             userDetails.getAuthorities().stream().map(a -> a.getAuthority()).toArray(String[]::new)
-        );
+        ));
     }
 }

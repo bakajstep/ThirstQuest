@@ -41,6 +41,10 @@ public class UserService implements UserDetailsService {
     }
 
     public AppUser saveUser(AppUser user) {
+        if (user.getId() == null && appUserRepository.existsByEmailOrUsername(user.getEmail(), user.getUsername())) {
+            return null;
+        }
+
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         // Assign role 2 (USER) by default, or set it during registration
         user.setRole(2); // USER role by default
@@ -60,6 +64,10 @@ public class UserService implements UserDetailsService {
 
     public AppUser getByEmail(String email) {
         return appUserRepository.findByEmail(email);
+    }
+
+    public boolean userExists(String email, String username) {
+        return appUserRepository.existsByEmailOrUsername(email, username);
     }
 
     public AppUser getUserById(UUID id) {
