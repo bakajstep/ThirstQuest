@@ -1,5 +1,6 @@
 package edu.vutfit.ThirstQuest.service;
 
+import edu.vutfit.ThirstQuest.dto.WaterBubblerDTO;
 import edu.vutfit.ThirstQuest.model.AppUser;
 import edu.vutfit.ThirstQuest.model.WaterBubbler;
 import edu.vutfit.ThirstQuest.repository.WaterBubblerRepository;

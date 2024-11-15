@@ -1,15 +1,19 @@
 package edu.vutfit.ThirstQuest.controller;
 
+import edu.vutfit.ThirstQuest.dto.WaterBubblerDTO;
 import edu.vutfit.ThirstQuest.model.AppUser;
 import edu.vutfit.ThirstQuest.model.Review;
+import edu.vutfit.ThirstQuest.model.VoteType;
 import edu.vutfit.ThirstQuest.model.WaterBubbler;
 import edu.vutfit.ThirstQuest.repository.WaterBubblerRepository;
+import edu.vutfit.ThirstQuest.service.ReviewService;
 import edu.vutfit.ThirstQuest.service.UserService;
 import edu.vutfit.ThirstQuest.service.WaterBubblerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -21,16 +25,31 @@ public class WaterBubblerController {
     private WaterBubblerService waterBubblerService;
 
     @Autowired
+    private ReviewService reviewService;
+
+    @Autowired
     private UserService userService;
 
     @GetMapping
-    public List<WaterBubbler> getAllWaterBubblers(
+    public List<WaterBubblerDTO> getAllWaterBubblers(
         @RequestParam double minLat,
         @RequestParam double maxLat,
         @RequestParam double minLon,
         @RequestParam double maxLon
     ) {
-        return waterBubblerService.getWaterBubblersWithinCoordinates(minLon, maxLon, minLat, maxLat);
+        List<WaterBubblerDTO> result = new ArrayList<>();
+        List<WaterBubbler> bubblers = waterBubblerService.getWaterBubblersWithinCoordinates(minLon, maxLon, minLat, maxLat);
+
+        for (WaterBubbler bubbler : bubblers) {
+            int downvote = reviewService.countByWaterBubblerAndVoteType(bubbler, VoteType.DOWNVOTE);
+            int upvote = reviewService.countByWaterBubblerAndVoteType(bubbler, VoteType.UPVOTE);
+
+            result.add(new WaterBubblerDTO(bubbler)
+                    .setDownvoteCount(downvote)
+                    .setUpvoteCount(upvote));
+        }
+
+        return result;
     }
 
     @GetMapping("/{id}")
