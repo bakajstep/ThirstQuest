@@ -1,7 +1,6 @@
 package edu.vutfit.ThirstQuest.model;
 
 import jakarta.persistence.*;
-
 import java.util.UUID;
 
 @Entity
@@ -11,9 +10,8 @@ public class Review {
     @GeneratedValue
     private UUID id;
 
-    private int rating;
-
-    private String text;
+    @Enumerated(EnumType.STRING)
+    private VoteType voteType;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -31,28 +29,20 @@ public class Review {
         this.id = id;
     }
 
-    public int getRating() {
-        return rating;
+    public VoteType getVoteType() {
+        return voteType;
     }
 
-    public void setRating(int rating) {
-        this.rating = rating;
-    }
-
-    public String getText() {
-        return text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
+    public void setVoteType(VoteType voteType) {
+        this.voteType = voteType;
     }
 
     public AppUser getUser() {
         return user;
     }
 
-    public void setUser(AppUser appUser) {
-        this.user = appUser;
+    public void setUser(AppUser user) {
+        this.user = user;
     }
 
     public WaterBubbler getWaterBubbler() {
