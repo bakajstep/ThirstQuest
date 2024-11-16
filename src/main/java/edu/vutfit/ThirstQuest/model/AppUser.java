@@ -20,6 +20,8 @@ public class AppUser {
     @Column(nullable = false)
     private String password;
 
+    private boolean authByGoogle = false;
+
     @Column(nullable = false)
     private int role;
 
@@ -81,6 +83,14 @@ public class AppUser {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public boolean isAuthByGoogle() {
+        return authByGoogle;
+    }
+
+    public void setAuthByGoogle(boolean authByGoogle) {
+        this.authByGoogle = authByGoogle;
     }
 
     public String getUsername() {
