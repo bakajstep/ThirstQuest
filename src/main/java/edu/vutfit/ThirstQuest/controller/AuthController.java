@@ -20,6 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -119,5 +120,20 @@ public class AuthController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while verifying the ID token");
         }
+    }
+
+    @PostMapping("/extend")
+    public ResponseEntity<?> extend(Authentication authentication)
+    {
+        String currentUserEmail = authentication.getName();
+        UserDetails userDetails = userService.loadUserByUsername(currentUserEmail);
+        String token = JwtTokenUtil.generateToken(currentUserEmail);
+
+        return ResponseEntity.ok(new AuthResponse(
+                token,
+                "Bearer",
+                userService.getByEmail(currentUserEmail),
+                userDetails.getAuthorities().stream().map(a -> a.getAuthority()).toArray(String[]::new)
+            ));
     }
 }
