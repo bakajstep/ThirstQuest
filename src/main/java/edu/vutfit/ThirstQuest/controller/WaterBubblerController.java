@@ -31,25 +31,25 @@ public class WaterBubblerController {
     private UserService userService;
 
     @GetMapping
-    public List<WaterBubblerDTO> getAllWaterBubblers(
+    public List<WaterBubbler> getAllWaterBubblers(
         @RequestParam double minLat,
         @RequestParam double maxLat,
         @RequestParam double minLon,
         @RequestParam double maxLon
     ) {
-        List<WaterBubblerDTO> result = new ArrayList<>();
-        List<WaterBubbler> bubblers = waterBubblerService.getWaterBubblersWithinCoordinates(minLon, maxLon, minLat, maxLat);
+        //List<WaterBubblerDTO> result = new ArrayList<>();
+        return waterBubblerService.getWaterBubblersWithinCoordinates(minLon, maxLon, minLat, maxLat);
 
-        for (WaterBubbler bubbler : bubblers) {
-            int downvote = reviewService.countByWaterBubblerAndVoteType(bubbler, VoteType.DOWNVOTE);
-            int upvote = reviewService.countByWaterBubblerAndVoteType(bubbler, VoteType.UPVOTE);
+        // for (WaterBubbler bubbler : bubblers) {
+        //     int downvote = reviewService.countByWaterBubblerAndVoteType(bubbler, VoteType.DOWNVOTE);
+        //     int upvote = reviewService.countByWaterBubblerAndVoteType(bubbler, VoteType.UPVOTE);
 
-            result.add(new WaterBubblerDTO(bubbler)
-                    .setDownvoteCount(downvote)
-                    .setUpvoteCount(upvote));
-        }
+        //     result.add(new WaterBubblerDTO(bubbler)
+        //             .setDownvoteCount(downvote)
+        //             .setUpvoteCount(upvote));
+        // }
 
-        return result;
+        // return result;
     }
 
     @GetMapping("/{id}")
