@@ -11,6 +11,7 @@ public class WaterBubblerDTO {
     private String name;
     private double latitude;
     private double longitude;
+    private String description;
     private List<Photo> photos;
     private UUID userId;
     private Long osmId;
@@ -63,6 +64,15 @@ public class WaterBubblerDTO {
 
     public WaterBubblerDTO setLongitude(double longitude) {
         this.longitude = longitude;
+        return this;
+    }
+
+    public String getDescription() {
+        return this.description;
+    }
+
+    public WaterBubblerDTO setDescription(String description) {
+        this.description = description;
         return this;
     }
 
