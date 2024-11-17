@@ -12,7 +12,7 @@ import javax.crypto.spec.SecretKeySpec;
 public class JwtTokenUtil {
 
     private static final String secretKey = "your_very_long_jwt_secret_key_that_is_at_least_32_bytes_long"; // Replace with your secret key
-    private static final long expirationTime = 86400000; // 1 day in milliseconds
+    private static final long expirationTime = 2592000000L; // 30 days in milliseconds
 
     public static String generateToken(String username) {
         Map<String, Object> claims = new HashMap<>();
