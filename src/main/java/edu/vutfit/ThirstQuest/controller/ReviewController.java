@@ -1,5 +1,7 @@
 package edu.vutfit.ThirstQuest.controller;
 
+import edu.vutfit.ThirstQuest.dto.ReviewDTO;
+import edu.vutfit.ThirstQuest.mapper.ReviewMapper;
 import edu.vutfit.ThirstQuest.model.AppUser;
 import edu.vutfit.ThirstQuest.model.Review;
 import edu.vutfit.ThirstQuest.service.ReviewService;
@@ -22,8 +24,12 @@ public class ReviewController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private ReviewMapper reviewMapper;
+
     @PostMapping
-    public ResponseEntity<String> createReview(@RequestBody Review review, Authentication authentication) {
+    public ResponseEntity<String> createReview(@RequestBody ReviewDTO dto, Authentication authentication) {
+        Review review = reviewMapper.toEntity(dto);
         String currentUserEmail = authentication.getName();
 
         AppUser user = userService.getByEmail(currentUserEmail);
@@ -39,7 +45,7 @@ public class ReviewController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateReview(@PathVariable UUID id, @RequestBody Review updatedReview, Authentication authentication) {
+    public ResponseEntity<String> updateReview(@PathVariable UUID id, @RequestBody ReviewDTO updatedReview, Authentication authentication) {
         Review existingReview = reviewService.getReviewById(id);
         String currentUserEmail = authentication.getName();
 

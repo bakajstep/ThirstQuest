@@ -1,11 +1,10 @@
 package edu.vutfit.ThirstQuest.controller;
 
 import edu.vutfit.ThirstQuest.dto.WaterBubblerDTO;
+import edu.vutfit.ThirstQuest.mapper.WaterBubblerMapper;
 import edu.vutfit.ThirstQuest.model.AppUser;
-import edu.vutfit.ThirstQuest.model.Review;
 import edu.vutfit.ThirstQuest.model.VoteType;
 import edu.vutfit.ThirstQuest.model.WaterBubbler;
-import edu.vutfit.ThirstQuest.repository.WaterBubblerRepository;
 import edu.vutfit.ThirstQuest.service.ReviewService;
 import edu.vutfit.ThirstQuest.service.UserService;
 import edu.vutfit.ThirstQuest.service.WaterBubblerService;
@@ -30,41 +29,55 @@ public class WaterBubblerController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private WaterBubblerMapper waterBubblerMapper;
+
     @GetMapping
-    public List<WaterBubbler> getAllWaterBubblers(
+    public List<WaterBubblerDTO> getAllWaterBubblers(
         @RequestParam double minLat,
         @RequestParam double maxLat,
         @RequestParam double minLon,
         @RequestParam double maxLon
     ) {
-        //List<WaterBubblerDTO> result = new ArrayList<>();
-        return waterBubblerService.getWaterBubblersWithinCoordinates(minLon, maxLon, minLat, maxLat);
+        List<WaterBubblerDTO> result = new ArrayList<>();
+        List<WaterBubbler> bubblers = waterBubblerService.getWaterBubblersWithinCoordinates(minLon, maxLon, minLat, maxLat);
 
-        // for (WaterBubbler bubbler : bubblers) {
-        //     int downvote = reviewService.countByWaterBubblerAndVoteType(bubbler, VoteType.DOWNVOTE);
-        //     int upvote = reviewService.countByWaterBubblerAndVoteType(bubbler, VoteType.UPVOTE);
+        // If watter bubbler is store in our db that mean it could have review other will have 0
+        for (WaterBubbler bubbler : bubblers) {
+            int downvote = 0;
+            int upvote = 0;
 
-        //     result.add(new WaterBubblerDTO(bubbler)
-        //             .setDownvoteCount(downvote)
-        //             .setUpvoteCount(upvote));
-        // }
+            if (bubbler.getId() != null) {
+                downvote = reviewService.countByWaterBubblerAndVoteType(bubbler, VoteType.DOWNVOTE);
+                upvote = reviewService.countByWaterBubblerAndVoteType(bubbler, VoteType.UPVOTE);
+            }
 
-        // return result;
+            result.add(waterBubblerMapper.toDTO(bubbler)
+                    .setDownvoteCount(downvote)
+                    .setUpvoteCount(upvote));
+        }
+
+        return result;
     }
 
     @GetMapping("/{id}")
-    public WaterBubbler getWaterBubblerById(@PathVariable UUID id) {
-        return waterBubblerService.getWaterBubblerById(id);
+    public WaterBubblerDTO getWaterBubblerById(@PathVariable UUID id) {
+        WaterBubbler waterBubbler = waterBubblerService.getWaterBubblerById(id);
+        return waterBubblerMapper.toDTO(waterBubbler);
     }
 
     @PostMapping
-    public WaterBubbler createWaterBubbler(@RequestBody WaterBubbler waterBubbler) {
-        return waterBubblerService.saveWaterBubbler(waterBubbler);
+    public String createWaterBubbler(@RequestBody WaterBubblerDTO waterBubbler) {
+        WaterBubbler entity = waterBubblerMapper.toEntity(waterBubbler);
+        waterBubblerService.saveWaterBubbler(entity);
+        return "Water Bubbler created";
     }
 
     @PutMapping("/{id}")
-    public WaterBubbler updateWaterBubbler(@PathVariable UUID id, @RequestBody WaterBubbler updatedBubbler) {
-        return waterBubblerService.updateWaterBubbler(id, updatedBubbler);
+    public String updateWaterBubbler(@PathVariable UUID id, @RequestBody WaterBubblerDTO updatedBubbler) {
+        WaterBubbler entity = waterBubblerMapper.toEntity(updatedBubbler);
+        waterBubblerService.updateWaterBubbler(id, entity);
+        return "Water Bubbler updated";
     }
 
     @DeleteMapping("/{id}")

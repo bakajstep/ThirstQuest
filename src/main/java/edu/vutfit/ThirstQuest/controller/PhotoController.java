@@ -1,7 +1,12 @@
 package edu.vutfit.ThirstQuest.controller;
 
+import edu.vutfit.ThirstQuest.dto.PhotoDTO;
+import edu.vutfit.ThirstQuest.mapper.PhotoMapper;
+import edu.vutfit.ThirstQuest.model.AppUser;
 import edu.vutfit.ThirstQuest.model.Photo;
 import edu.vutfit.ThirstQuest.service.PhotoService;
+import edu.vutfit.ThirstQuest.service.UserService;
+import edu.vutfit.ThirstQuest.service.WaterBubblerOSMService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -15,14 +20,34 @@ public class PhotoController {
     @Autowired
     private PhotoService photoService;
 
+    @Autowired
+    private PhotoMapper photoMapper;
+
+    @Autowired
+    private UserService userService;
+
     @PostMapping
-    public Photo createPhoto(@RequestBody Photo photo) {
-        return photoService.savePhoto(photo);
+    public String createPhoto(@RequestBody PhotoDTO dto, Authentication authentication) {
+        Photo photo = photoMapper.toEntity(dto);
+        String currentUserEmail = authentication.getName();
+
+        AppUser user = userService.getByEmail(currentUserEmail);
+        photo.setUser(user);
+
+        photoService.savePhoto(photo);
+        return "Photo Created";
     }
 
     @PutMapping("/{id}")
-    public Photo updatePhoto(@PathVariable UUID id, @RequestBody Photo updatedPhoto) {
-        return photoService.updatePhoto(id, updatedPhoto);
+    public String updatePhoto(@PathVariable UUID id, @RequestBody PhotoDTO updatedPhoto, Authentication authentication) {
+        Photo entity = photoMapper.toEntity(updatedPhoto);
+        String currentUserEmail = authentication.getName();
+
+        AppUser user = userService.getByEmail(currentUserEmail);
+        entity.setUser(user);
+
+        photoService.updatePhoto(id, entity);
+        return "Photo Updated";
     }
 
     @DeleteMapping("/{id}")

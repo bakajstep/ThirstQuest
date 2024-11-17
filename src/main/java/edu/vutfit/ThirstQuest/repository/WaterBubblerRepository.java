@@ -11,4 +11,6 @@ public interface WaterBubblerRepository extends JpaRepository<WaterBubbler, UUID
     List<WaterBubbler> findByUser(AppUser appUser);
 
     List<WaterBubbler> findByLongitudeBetweenAndLatitudeBetween(double minLon, double maxLon, double minLat, double maxLat);
+
+    WaterBubbler findByOpenStreetId(Long openStreetId);
 }

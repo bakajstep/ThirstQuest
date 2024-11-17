@@ -12,19 +12,13 @@ public class WaterBubblerDTO {
     private double latitude;
     private double longitude;
     private List<Photo> photos;
+    private UUID userId;
+    private Long osmId;
     private int upvoteCount;
     private int downvoteCount;
 
     public WaterBubblerDTO() {
         // Default constructor
-    }
-
-    public WaterBubblerDTO(WaterBubbler waterBubbler) {
-        this.id = waterBubbler.getId();
-        this.name = waterBubbler.getName();
-        this.latitude = waterBubbler.getLatitude();
-        this.longitude = waterBubbler.getLongitude();
-        this.photos = waterBubbler.getPhotos();
     }
 
     public UUID getId() {
@@ -45,6 +39,15 @@ public class WaterBubblerDTO {
         return this;
     }
 
+    public UUID getUserId() {
+        return this.userId;
+    }
+
+    public WaterBubblerDTO setUserId(UUID userId) {
+        this.userId = userId;
+        return this;
+    }
+
     public double getLatitude() {
         return latitude;
     }
@@ -60,6 +63,15 @@ public class WaterBubblerDTO {
 
     public WaterBubblerDTO setLongitude(double longitude) {
         this.longitude = longitude;
+        return this;
+    }
+
+    public Long getOsmId() {
+        return this.osmId;
+    }
+
+    public WaterBubblerDTO setOsmId(Long osmId) {
+        this.osmId = osmId;
         return this;
     }
 

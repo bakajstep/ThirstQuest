@@ -69,4 +69,8 @@ public class WaterBubblerService {
                     return waterBubblerRepository.save(bubbler);
                 }).orElse(null);
     }
+
+    public WaterBubbler getWatterBubblersByOpenStreetId(Long id) {
+        return waterBubblerRepository.findByOpenStreetId(id);
+    }
 }
