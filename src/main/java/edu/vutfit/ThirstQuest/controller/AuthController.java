@@ -118,6 +118,9 @@ public class AuthController {
                 userDetails.getAuthorities().stream().map(a -> a.getAuthority()).toArray(String[]::new)
             ));
         } catch (Exception e) {
+            System.err.println(e.toString());
+            System.err.println(e.getMessage());
+            System.err.println(e.getStackTrace());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while verifying the ID token");
         }
     }
