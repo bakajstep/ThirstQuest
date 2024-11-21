@@ -3,16 +3,13 @@ package edu.vutfit.ThirstQuest.controller;
 import edu.vutfit.ThirstQuest.dto.WaterBubblerDTO;
 import edu.vutfit.ThirstQuest.mapper.WaterBubblerMapper;
 import edu.vutfit.ThirstQuest.model.AppUser;
-import edu.vutfit.ThirstQuest.model.VoteType;
 import edu.vutfit.ThirstQuest.model.WaterBubbler;
-import edu.vutfit.ThirstQuest.service.ReviewService;
 import edu.vutfit.ThirstQuest.service.UserService;
 import edu.vutfit.ThirstQuest.service.WaterBubblerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -22,9 +19,6 @@ public class WaterBubblerController {
 
     @Autowired
     private WaterBubblerService waterBubblerService;
-
-    @Autowired
-    private ReviewService reviewService;
 
     @Autowired
     private UserService userService;
@@ -39,25 +33,9 @@ public class WaterBubblerController {
         @RequestParam double minLon,
         @RequestParam double maxLon
     ) {
-        List<WaterBubblerDTO> result = new ArrayList<>();
         List<WaterBubbler> bubblers = waterBubblerService.getWaterBubblersWithinCoordinates(minLon, maxLon, minLat, maxLat);
 
-        // If watter bubbler is store in our db that mean it could have review other will have 0
-        for (WaterBubbler bubbler : bubblers) {
-            int downvote = 0;
-            int upvote = 0;
-
-            if (bubbler.getId() != null) {
-                downvote = reviewService.countByWaterBubblerAndVoteType(bubbler, VoteType.DOWNVOTE);
-                upvote = reviewService.countByWaterBubblerAndVoteType(bubbler, VoteType.UPVOTE);
-            }
-
-            result.add(waterBubblerMapper.toDTO(bubbler)
-                    .setDownvoteCount(downvote)
-                    .setUpvoteCount(upvote));
-        }
-
-        return result;
+        return bubblers.stream().map(waterBubblerMapper::toDTO).toList();
     }
 
     @GetMapping("/{id}")

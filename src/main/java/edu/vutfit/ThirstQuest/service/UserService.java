@@ -96,33 +96,25 @@ public class UserService implements UserDetailsService {
         }
     }
 
-    public void addFavoriteBubbler(UUID userId, UUID fountainId) {
-        Optional<AppUser> user = appUserRepository.findById(userId);
+    public void addFavoriteBubbler(AppUser user, UUID fountainId) {
         Optional<WaterBubbler> bubbler = watterBubblerRepository.findById(fountainId);
 
-        if (user.isEmpty()) {
-            throw new IllegalArgumentException("User not found");
-        }
         if (bubbler.isEmpty()) {
             throw new IllegalArgumentException("WaterBubbler not found");
         }
 
-        user.get().getFavoriteBubblers().add(bubbler.get());
-        appUserRepository.save(user.get());
+        user.getFavoriteBubblers().add(bubbler.get());
+        appUserRepository.save(user);
     }
 
-    public void removeFavoriteBubbler(UUID userId, UUID fountainId) {
-        Optional<AppUser> user = appUserRepository.findById(userId);
+    public void removeFavoriteBubbler(AppUser user, UUID fountainId) {
         Optional<WaterBubbler> bubbler = watterBubblerRepository.findById(fountainId);
 
-        if (user.isEmpty()) {
-            throw new IllegalArgumentException("User not found");
-        }
         if (bubbler.isEmpty()) {
             throw new IllegalArgumentException("WaterBubbler not found");
         }
 
-        user.get().getFavoriteBubblers().remove(bubbler.get());
-        appUserRepository.save(user.get());
+        user.getFavoriteBubblers().remove(bubbler.get());
+        appUserRepository.save(user);
     }
 }

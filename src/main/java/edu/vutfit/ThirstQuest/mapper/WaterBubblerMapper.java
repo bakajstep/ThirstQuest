@@ -2,7 +2,9 @@ package edu.vutfit.ThirstQuest.mapper;
 
 import edu.vutfit.ThirstQuest.dto.WaterBubblerDTO;
 import edu.vutfit.ThirstQuest.model.AppUser;
+import edu.vutfit.ThirstQuest.model.VoteType;
 import edu.vutfit.ThirstQuest.model.WaterBubbler;
+import edu.vutfit.ThirstQuest.service.ReviewService;
 import edu.vutfit.ThirstQuest.service.UserService;
 import edu.vutfit.ThirstQuest.service.WaterBubblerOSMService;
 import edu.vutfit.ThirstQuest.service.WaterBubblerService;
@@ -15,12 +17,14 @@ public class WaterBubblerMapper {
     private final UserService userService;
     private final WaterBubblerService waterBubblerService;
     private final WaterBubblerOSMService waterBubblerServiceOsm;
+    private final ReviewService reviewService;
 
     @Autowired
-    public WaterBubblerMapper(UserService userService, WaterBubblerService waterBubblerService, WaterBubblerOSMService waterBubblerServiceOsm) {
+    public WaterBubblerMapper(UserService userService, WaterBubblerService waterBubblerService, WaterBubblerOSMService waterBubblerServiceOsm, ReviewService reviewService) {
         this.userService = userService;
         this.waterBubblerService = waterBubblerService;
         this.waterBubblerServiceOsm = waterBubblerServiceOsm;
+        this.reviewService = reviewService;
     }
 
     public WaterBubbler toEntity(WaterBubblerDTO dto) {
@@ -61,6 +65,17 @@ public class WaterBubblerMapper {
         dto.setLatitude(entity.getLatitude());
         dto.setLongitude(entity.getLongitude());
         dto.setDescription(entity.getDesc());
+
+        int downvote = 0;
+        int upvote = 0;
+
+        if (entity.getId() != null) {
+            downvote = reviewService.countByWaterBubblerAndVoteType(entity, VoteType.DOWNVOTE);
+            upvote = reviewService.countByWaterBubblerAndVoteType(entity, VoteType.UPVOTE);
+        }
+
+        dto.setDownvoteCount(downvote);
+        dto.setUpvoteCount(upvote);
 
         // TODO photos
 
