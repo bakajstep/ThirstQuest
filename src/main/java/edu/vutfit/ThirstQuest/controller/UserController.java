@@ -1,5 +1,7 @@
 package edu.vutfit.ThirstQuest.controller;
 
+import edu.vutfit.ThirstQuest.dto.FavoriteBubblerDTO;
+import edu.vutfit.ThirstQuest.mapper.FavoriteBubblerMapper;
 import edu.vutfit.ThirstQuest.model.AppUser;
 import edu.vutfit.ThirstQuest.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,13 +18,17 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @PostMapping("/favorites/{fountainId}")
-    public ResponseEntity<String> addFavoriteFountain(@PathVariable UUID fountainId, Authentication authentication) {
+    @Autowired
+    private FavoriteBubblerMapper favoriteBubblerMapper;
+
+    @PostMapping("/favorites")
+    public ResponseEntity<String> addFavoriteFountain(@RequestBody FavoriteBubblerDTO favoriteBubblerDTO, Authentication authentication) {
         String currentUserEmail = authentication.getName();
         AppUser user = userService.getByEmail(currentUserEmail);
+        UUID bubblerId = favoriteBubblerMapper.toEntity(favoriteBubblerDTO);
 
         try {
-            userService.addFavoriteBubbler(user, fountainId);
+            userService.addFavoriteBubbler(user, bubblerId);
             return ResponseEntity.ok("WaterBubbler was added to favorites.");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
