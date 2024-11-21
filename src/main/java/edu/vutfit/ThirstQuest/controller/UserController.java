@@ -35,13 +35,13 @@ public class UserController {
         }
     }
 
-    @DeleteMapping("/favorites/{fountainId}")
-    public ResponseEntity<String> removeFavoriteFountain(@PathVariable UUID fountainId, Authentication authentication) {
+    @DeleteMapping("/favorites/{bubblerId}")
+    public ResponseEntity<String> removeFavoriteFountain(@PathVariable UUID bubblerId, Authentication authentication) {
         String currentUserEmail = authentication.getName();
         AppUser user = userService.getByEmail(currentUserEmail);
 
         try {
-            userService.removeFavoriteBubbler(user, fountainId);
+            userService.removeFavoriteBubbler(user, bubblerId);
             return ResponseEntity.ok("WaterBubbler was removed to favorites.");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());

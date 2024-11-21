@@ -26,16 +26,16 @@ public class FavoriteBubblerMapper {
             return null;
         }
 
-        if (dto.getWaterBubblerId() != null) {
-            WaterBubbler waterBubbler = waterBubblerService.getWaterBubblerById(dto.getWaterBubblerId());
+        if (dto.getId() != null) {
+            WaterBubbler waterBubbler = waterBubblerService.getWaterBubblerById(dto.getId());
             if (waterBubbler == null) {
                 throw new IllegalArgumentException("WaterBubbler does not exist by id");
             }
             return waterBubbler.getId();
         }
 
-        if (dto.getWaterBubblerOsmId() != null) {
-            WaterBubbler waterBubblerByOsm = waterBubblerServiceOsm.getWaterBubblerByOsmIdFromOsm(dto.getWaterBubblerOsmId());
+        if (dto.getOsmId() != null) {
+            WaterBubbler waterBubblerByOsm = waterBubblerServiceOsm.getWaterBubblerByOsmIdFromOsm(dto.getOsmId());
             if (waterBubblerByOsm == null) {
                 throw new IllegalArgumentException("WaterBubbler does not exist in OpenStreetMap");
             }

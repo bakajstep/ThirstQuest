@@ -3,24 +3,24 @@ package edu.vutfit.ThirstQuest.dto;
 import java.util.UUID;
 
 public class FavoriteBubblerDTO {
-    private UUID waterBubblerId;
-    private Long waterBubblerOsmId;
+    private UUID id;
+    private Long osmId;
 
-    public UUID getWaterBubblerId() {
-        return waterBubblerId;
+    public UUID getId() {
+        return id;
     }
 
-    public FavoriteBubblerDTO setWaterBubblerId(UUID waterBubblerId) {
-        this.waterBubblerId = waterBubblerId;
+    public FavoriteBubblerDTO setId(UUID waterBubblerId) {
+        this.id = waterBubblerId;
         return this;
     }
 
-    public Long getWaterBubblerOsmId() {
-        return waterBubblerOsmId;
+    public Long getOsmId() {
+        return osmId;
     }
 
-    public FavoriteBubblerDTO setWaterBubblerOsmId(Long waterBubblerOsmId) {
-        this.waterBubblerOsmId = waterBubblerOsmId;
+    public FavoriteBubblerDTO setOsmId(Long waterBubblerOsmId) {
+        this.osmId = waterBubblerOsmId;
         return this;
     }
 }
