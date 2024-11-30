@@ -8,14 +8,30 @@ import edu.vutfit.ThirstQuest.service.PhotoService;
 import edu.vutfit.ThirstQuest.service.UserService;
 import edu.vutfit.ThirstQuest.service.WaterBubblerOSMService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/photos")
 public class PhotoController {
+
+    @Value("${upload.dir}")
+    private String uploadDir;
+
+    @Value("${server.url}")
+    private String serverUrl;
 
     @Autowired
     private PhotoService photoService;
@@ -26,46 +42,72 @@ public class PhotoController {
     @Autowired
     private UserService userService;
 
-    @PostMapping
-    public String createPhoto(@RequestBody PhotoDTO dto, Authentication authentication) {
-        Photo photo = photoMapper.toEntity(dto);
+    @PostMapping("/upload")
+    public ResponseEntity<PhotoDTO> uploadImage(
+            @RequestParam("file") MultipartFile file,
+            @RequestParam(value = "waterBubblerId", required = false) UUID waterBubblerId,
+            @RequestParam(value = "waterBubblerOsmId", required = false) Long waterBubblerOsmId,
+            Authentication authentication
+    ) {
+        if (file.isEmpty()) {
+            return ResponseEntity.badRequest().body(null);
+        }
+
+        if (file.getSize() > 5 * 1024 * 1024) {
+            return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body(null);
+        }
+
         String currentUserEmail = authentication.getName();
-
         AppUser user = userService.getByEmail(currentUserEmail);
-        photo.setUser(user);
 
-        photoService.savePhoto(photo);
-        return "Photo Created";
-    }
+        try {
+            String fileName = UUID.randomUUID().toString() + "_" + StringUtils.cleanPath(file.getOriginalFilename());
+            Path path = Paths.get(uploadDir + File.separator + fileName);
+            Files.createDirectories(path.getParent());
+            Files.write(path, file.getBytes());
 
-    @PutMapping("/{id}")
-    public String updatePhoto(@PathVariable UUID id, @RequestBody PhotoDTO updatedPhoto, Authentication authentication) {
-        Photo entity = photoMapper.toEntity(updatedPhoto);
-        String currentUserEmail = authentication.getName();
+            String fileUrl = serverUrl + "/uploads/" + fileName;
 
-        AppUser user = userService.getByEmail(currentUserEmail);
-        entity.setUser(user);
+            PhotoDTO photoDTO = new PhotoDTO()
+                    .setId(UUID.randomUUID())
+                    .setName(fileName)
+                    .setUrl(fileUrl)
+                    .setUserId(user.getId())
+                    .setWaterBubblerId(waterBubblerId)
+                    .setWaterBubblerOsmId(waterBubblerOsmId);
 
-        photoService.updatePhoto(id, entity);
-        return "Photo Updated";
+            Photo photo = photoMapper.toEntity(photoDTO);
+            photoService.savePhoto(photo);
+
+            return ResponseEntity.ok(photoDTO);
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
     }
 
     @DeleteMapping("/{id}")
-    public String deletePhoto(@PathVariable UUID id, Authentication authentication) {
+    public ResponseEntity<String> deletePhoto(@PathVariable UUID id, Authentication authentication) {
         Photo photo = photoService.getPhotoById(id);
         String currentUserEmail = authentication.getName();
 
         if (photo == null) {
-            return "Review not found";
+            return ResponseEntity.status(404).body("Photo not found");
         }
 
-        // Only allow the owner of the photo or an ADMIN to delete it
-        if (photo.getUser().getEmail().equals(currentUserEmail) || authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
+        if (photo.getUser().getEmail().equals(currentUserEmail) ||
+                authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
+            Path filePath = Paths.get(uploadDir, photo.getName());
+            File file = filePath.toFile();
+            if (file.exists() && !file.delete()) {
+                return ResponseEntity.status(500).body("Failed to delete the photo file");
+            }
+
             photoService.deletePhoto(id);
-            return "Photo deleted";
+
+            return ResponseEntity.ok("Photo deleted");
         }
 
-        return "Unauthorized to delete this photo";
+        return ResponseEntity.status(403).body("Unauthorized to delete this photo");
     }
 }
 

@@ -12,7 +12,7 @@ public class WaterBubblerDTO {
     private double latitude;
     private double longitude;
     private String description;
-    private List<Photo> photos;
+    private List<PhotoDTO> photos;
     private UUID userId;
     private Long osmId;
     private int upvoteCount;
@@ -85,11 +85,11 @@ public class WaterBubblerDTO {
         return this;
     }
 
-    public List<Photo> getPhotos() {
+    public List<PhotoDTO> getPhotos() {
         return photos;
     }
 
-    public WaterBubblerDTO setPhotos(List<Photo> photos) {
+    public WaterBubblerDTO setPhotos(List<PhotoDTO> photos) {
         this.photos = photos;
         return this;
     }
