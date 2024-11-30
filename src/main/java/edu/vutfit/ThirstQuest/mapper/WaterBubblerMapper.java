@@ -9,18 +9,22 @@ import edu.vutfit.ThirstQuest.service.WaterBubblerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.stream.Collectors;
+
 @Component
 public class WaterBubblerMapper {
 
     private final UserService userService;
     private final WaterBubblerService waterBubblerService;
     private final WaterBubblerOSMService waterBubblerServiceOsm;
+    private final PhotoMapper photoMapper;
 
     @Autowired
-    public WaterBubblerMapper(UserService userService, WaterBubblerService waterBubblerService, WaterBubblerOSMService waterBubblerServiceOsm) {
+    public WaterBubblerMapper(UserService userService, WaterBubblerService waterBubblerService, WaterBubblerOSMService waterBubblerServiceOsm, PhotoMapper photoMapper) {
         this.userService = userService;
         this.waterBubblerService = waterBubblerService;
         this.waterBubblerServiceOsm = waterBubblerServiceOsm;
+        this.photoMapper = photoMapper;
     }
 
     public WaterBubbler toEntity(WaterBubblerDTO dto) {
@@ -44,8 +48,6 @@ public class WaterBubblerMapper {
             waterBubbler.setUser(user);
         }
 
-        // TODO photos
-
         return waterBubbler;
     }
 
@@ -62,7 +64,9 @@ public class WaterBubblerMapper {
         dto.setLongitude(entity.getLongitude());
         dto.setDescription(entity.getDesc());
 
-        // TODO photos
+        dto.setPhotos(entity.getPhotos().stream()
+            .map(photoMapper::toDTO)
+            .collect(Collectors.toList()));
 
         if (entity.getUser() != null) {
             dto.setUserId(entity.getUser().getId());
