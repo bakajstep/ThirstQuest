@@ -1,6 +1,7 @@
 package edu.vutfit.ThirstQuest.controller;
 
 import edu.vutfit.ThirstQuest.dto.WaterBubblerDTO;
+import edu.vutfit.ThirstQuest.dto.WaterBubblerIdsDTO;
 import edu.vutfit.ThirstQuest.mapper.WaterBubblerMapper;
 import edu.vutfit.ThirstQuest.model.AppUser;
 import edu.vutfit.ThirstQuest.model.VoteType;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -80,22 +82,41 @@ public class WaterBubblerController {
         return "Water Bubbler updated";
     }
 
-    @DeleteMapping("/{id}")
-    public String deleteWaterBubbler(@PathVariable UUID id, Authentication authentication) {
-        WaterBubbler waterBubbler = waterBubblerService.getWaterBubblerById(id);
+    @DeleteMapping("/")
+    public String deleteWaterBubbler(@RequestBody WaterBubblerIdsDTO request, Authentication authentication) {
         String currentUserEmail = authentication.getName();
 
-        if (waterBubbler == null) {
-            return "Water bubbler not found";
+        if (request.getFountainId() != null) {
+            WaterBubbler waterBubbler = waterBubblerService.getWaterBubblerById(request.getFountainId());
+            if (waterBubbler == null) {
+                return "Water bubbler not found";
+            }
+
+            if (waterBubbler.getUser().getEmail().equals(currentUserEmail) ||
+                    authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
+                waterBubblerService.deleteWaterBubbler(request.getFountainId());
+                return "Water bubbler deleted";
+            }
+            return "Unauthorized to delete this water bubbler";
+
+        } else if (request.getOpenStreetId() != null) {
+            Optional<WaterBubbler> waterBubbler = waterBubblerService.getWatterBubblerByOpenStreetId(request.getOpenStreetId());
+            if (waterBubbler.isEmpty()) {
+                return "Water bubbler not found";
+            }
+
+            if (waterBubbler.get().getUser().getEmail().equals(currentUserEmail) ||
+                    authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
+                waterBubblerService.deleteWaterBubblerByOpenStreetId(request.getOpenStreetId());
+                return "Water bubbler deleted";
+            }
+            return "Unauthorized to delete this water bubbler";
         }
 
-        // Only allow the owner of the water bubbler or an ADMIN to delete it
-        if (waterBubbler.getUser().getEmail().equals(currentUserEmail) || authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
-            waterBubblerService.deleteWaterBubbler(id);
-            return "Water bubbler deleted";
-        }
-        return "Unauthorized to delete this water bubbler";
+        // Žádný platný identifikátor nebyl poskytnut
+        return "Invalid request: neither ID nor OpenStreetId provided.";
     }
+
 
     @GetMapping("/user/{userId}")
     public List<WaterBubbler> getWaterBubblersByUser(@PathVariable UUID userId) {

@@ -1,6 +1,5 @@
 package edu.vutfit.ThirstQuest.service;
 
-import edu.vutfit.ThirstQuest.dto.WaterBubblerDTO;
 import edu.vutfit.ThirstQuest.model.AppUser;
 import edu.vutfit.ThirstQuest.model.WaterBubbler;
 import edu.vutfit.ThirstQuest.repository.WaterBubblerRepository;
@@ -10,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -70,7 +70,11 @@ public class WaterBubblerService {
                 }).orElse(null);
     }
 
-    public WaterBubbler getWatterBubblersByOpenStreetId(Long id) {
+    public Optional<WaterBubbler> getWatterBubblerByOpenStreetId(Long id) {
         return waterBubblerRepository.findByOpenStreetId(id);
+    }
+
+    public void deleteWaterBubblerByOpenStreetId(Long id) {
+        waterBubblerRepository.deleteByOpenStreetId(id);
     }
 }
