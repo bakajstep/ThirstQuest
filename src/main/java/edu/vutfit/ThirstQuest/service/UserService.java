@@ -26,6 +26,9 @@ public class UserService implements UserDetailsService {
     private WaterBubblerRepository watterBubblerRepository;
 
     @Autowired
+    private WaterBubblerOSMService waterBubblerOsmService;
+
+    @Autowired
     @Lazy
     private BCryptPasswordEncoder passwordEncoder;
 
@@ -96,14 +99,24 @@ public class UserService implements UserDetailsService {
         }
     }
 
-    public void addFavoriteBubbler(AppUser user, UUID fountainId) {
-        Optional<WaterBubbler> bubbler = watterBubblerRepository.findById(fountainId);
-
-        if (bubbler.isEmpty()) {
-            throw new IllegalArgumentException("WaterBubbler not found");
+    public void addFavoriteBubbler(AppUser user, UUID bubblerId, Long osmID) {
+        WaterBubbler bubbler = null;
+        if (bubblerId != null) {
+            Optional<WaterBubbler> tmpBubbler = watterBubblerRepository.findById(bubblerId);
+            bubbler = tmpBubbler.orElse(null);
+        } else if (osmID != null) {
+            WaterBubbler waterBubblerByOsm = waterBubblerOsmService.getWaterBubblerByOsmIdFromOsm(osmID);
+            if (waterBubblerByOsm == null) {
+                throw new IllegalArgumentException("WaterBubbler does not exist in OpenStreetMap");
+            }
+            bubbler = watterBubblerRepository.save(waterBubblerByOsm);
         }
 
-        user.getFavoriteBubblers().add(bubbler.get());
+        if (bubbler == null) {
+            throw new IllegalArgumentException("Adding WaterBubbler to favourrite failed, because buubler not exist.");
+        }
+
+        user.getFavoriteBubblers().add(bubbler);
         appUserRepository.save(user);
     }
 

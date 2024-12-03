@@ -3,16 +3,16 @@ package edu.vutfit.ThirstQuest.dto;
 import java.util.UUID;
 
 public class WaterBubblerIdsDTO {
-    private UUID fountainId;
+    private UUID bubblerId;
     private Long openStreetId;
 
     // Gettery a settery
-    public UUID getFountainId() {
-        return fountainId;
+    public UUID getBubblerId() {
+        return bubblerId;
     }
 
-    public WaterBubblerIdsDTO setFountainId(UUID fountainId) {
-        this.fountainId = fountainId;
+    public WaterBubblerIdsDTO setBubblerId(UUID bubblerId) {
+        this.bubblerId = bubblerId;
         return this;
     }
 

@@ -116,15 +116,15 @@ public class WaterBubblerController {
     public String deleteWaterBubbler(@RequestBody WaterBubblerIdsDTO request, Authentication authentication) {
         String currentUserEmail = authentication.getName();
 
-        if (request.getFountainId() != null) {
-            WaterBubbler waterBubbler = waterBubblerService.getWaterBubblerById(request.getFountainId());
+        if (request.getBubblerId() != null) {
+            WaterBubbler waterBubbler = waterBubblerService.getWaterBubblerById(request.getBubblerId());
             if (waterBubbler == null) {
                 return "Water bubbler not found";
             }
 
             if (waterBubbler.getUser().getEmail().equals(currentUserEmail) ||
                     authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
-                waterBubblerService.deleteWaterBubbler(request.getFountainId());
+                waterBubblerService.deleteWaterBubbler(request.getBubblerId());
                 return "Water bubbler deleted";
             }
             return "Unauthorized to delete this water bubbler";

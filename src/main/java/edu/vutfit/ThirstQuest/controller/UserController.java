@@ -17,12 +17,12 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @PostMapping("/favorites/{fountainId}")
-    public ResponseEntity<String> addFavoriteFountain(@PathVariable UUID fountainId, Authentication authentication) {
+    @PostMapping("/favorites")
+    public ResponseEntity<String> addFavoriteFountain(@RequestBody WaterBubblerIdsDTO bubbler, Authentication authentication) {
         String currentUserEmail = authentication.getName();
         AppUser user = userService.getByEmail(currentUserEmail);
         try {
-            userService.addFavoriteBubbler(user, fountainId);
+            userService.addFavoriteBubbler(user, bubbler.getBubblerId(), bubbler.getOpenStreetId());
             return ResponseEntity.ok("WaterBubbler was added to favorites.");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -37,8 +37,8 @@ public class UserController {
         AppUser user = userService.getByEmail(currentUserEmail);
 
         try {
-            if (request.getFountainId() != null) {
-                userService.removeFavoriteBubbler(user, request.getFountainId());
+            if (request.getBubblerId() != null) {
+                userService.removeFavoriteBubbler(user, request.getBubblerId());
             } else if (request.getOpenStreetId() != null) {
                 userService.removeFavoriteBubblerByOpenStreetId(user, request.getOpenStreetId());
             } else {
