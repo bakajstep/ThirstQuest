@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/waterbubblers")
@@ -118,9 +119,14 @@ public class WaterBubblerController {
     }
 
 
-    @GetMapping("/user/{userId}")
-    public List<WaterBubbler> getWaterBubblersByUser(@PathVariable UUID userId) {
-        AppUser appUser = userService.getUserById(userId);
-        return waterBubblerService.getWaterBubblersByUser(appUser);
+    @GetMapping("/user")
+    public List<WaterBubblerDTO> getWaterBubblersCreatedByUser(Authentication authentication) {
+        String currentUserEmail = authentication.getName();
+        AppUser user = userService.getByEmail(currentUserEmail);
+
+        return waterBubblerService.getWaterBubblersByUser(user)
+                .stream()
+                .map(waterBubblerMapper::toDTO)
+                .toList();
     }
 }
