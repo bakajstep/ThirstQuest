@@ -1,9 +1,12 @@
 package edu.vutfit.ThirstQuest.controller;
 
+import edu.vutfit.ThirstQuest.dto.ReviewDTO;
 import edu.vutfit.ThirstQuest.dto.WaterBubblerDTO;
 import edu.vutfit.ThirstQuest.dto.WaterBubblerIdsDTO;
+import edu.vutfit.ThirstQuest.mapper.ReviewMapper;
 import edu.vutfit.ThirstQuest.mapper.WaterBubblerMapper;
 import edu.vutfit.ThirstQuest.model.AppUser;
+import edu.vutfit.ThirstQuest.model.Review;
 import edu.vutfit.ThirstQuest.model.VoteType;
 import edu.vutfit.ThirstQuest.model.WaterBubbler;
 import edu.vutfit.ThirstQuest.service.ReviewService;
@@ -35,13 +38,23 @@ public class WaterBubblerController {
     @Autowired
     private WaterBubblerMapper waterBubblerMapper;
 
+    @Autowired
+    private ReviewMapper reviewMapper;
+
     @GetMapping
     public List<WaterBubblerDTO> getAllWaterBubblers(
         @RequestParam double minLat,
         @RequestParam double maxLat,
         @RequestParam double minLon,
-        @RequestParam double maxLon
+        @RequestParam double maxLon,
+        Authentication authentication
     ) {
+        AppUser user = null;
+        if (authentication != null) {
+            String currentUserEmail = authentication.getName();
+            user = userService.getByEmail(currentUserEmail);
+        }
+
         List<WaterBubblerDTO> result = new ArrayList<>();
         List<WaterBubbler> bubblers = waterBubblerService.getWaterBubblersWithinCoordinates(minLon, maxLon, minLat, maxLat);
 
@@ -55,9 +68,26 @@ public class WaterBubblerController {
                 upvote = reviewService.countByWaterBubblerAndVoteType(bubbler, VoteType.UPVOTE);
             }
 
-            result.add(waterBubblerMapper.toDTO(bubbler)
+            WaterBubblerDTO waterBubblerDTO = waterBubblerMapper.toDTO(bubbler)
                     .setDownvoteCount(downvote)
-                    .setUpvoteCount(upvote));
+                    .setUpvoteCount(upvote);
+
+            if (user != null) {
+                Review review = reviewService.findByUserAndWaterBubbler(user, bubbler);
+                if (review != null) {
+                    ReviewDTO reviewDTO = reviewMapper.toDTO(review);
+                    waterBubblerDTO.setReview(reviewDTO);
+                }
+
+                List<WaterBubbler> list = user.getFavoriteBubblers()
+                        .stream()
+                        .filter(b -> b.getId() == bubbler.getId() || b.getOpenStreetId() == bubbler.getOpenStreetId())
+                        .toList();
+                if (!list.isEmpty()) {
+                    waterBubblerDTO.setFavorite(true);
+                }
+            }
+            result.add(waterBubblerDTO);
         }
 
         return result;

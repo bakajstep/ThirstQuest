@@ -1,7 +1,9 @@
 package edu.vutfit.ThirstQuest.config;
 
 import edu.vutfit.ThirstQuest.model.AppUser;
+import edu.vutfit.ThirstQuest.model.WaterBubbler;
 import edu.vutfit.ThirstQuest.repository.AppUserRepository;
+import edu.vutfit.ThirstQuest.repository.WaterBubblerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -12,6 +14,9 @@ public class DefaultUserInitializer implements CommandLineRunner {
 
     @Autowired
     private AppUserRepository appUserRepository;
+
+    @Autowired
+    private WaterBubblerRepository waterBubblerRepository;
 
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
@@ -33,5 +38,15 @@ public class DefaultUserInitializer implements CommandLineRunner {
         } else {
             System.out.println("Admin user already exists.");
         }
+
+        if (waterBubblerRepository.findByUser(appUserRepository.findByEmail("admin@admin.com")).isEmpty()) {
+            WaterBubbler waterBubbler = new WaterBubbler();
+            waterBubbler.setName("WaterBubbler");
+            waterBubbler.setUser(appUserRepository.findByEmail("admin@admin.com"));
+            waterBubblerRepository.save(waterBubbler);
+
+            System.out.println("Water Bubbler created with name 'WaterBubbler'");
+        }
+
     }
 }

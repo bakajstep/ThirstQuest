@@ -17,6 +17,8 @@ public class WaterBubblerDTO {
     private Long osmId;
     private int upvoteCount;
     private int downvoteCount;
+    private ReviewDTO review;
+    private boolean favorite;
 
     public WaterBubblerDTO() {
         // Default constructor
@@ -109,6 +111,24 @@ public class WaterBubblerDTO {
 
     public WaterBubblerDTO setDownvoteCount(int downvoteCount) {
         this.downvoteCount = downvoteCount;
+        return this;
+    }
+
+    public ReviewDTO getReview() {
+        return review;
+    }
+
+    public WaterBubblerDTO setReview(ReviewDTO review) {
+        this.review = review;
+        return this;
+    }
+
+    public boolean isFavorite() {
+        return this.favorite;
+    }
+
+    public WaterBubblerDTO setFavorite(boolean favorite) {
+        this.favorite = favorite;
         return this;
     }
 }
