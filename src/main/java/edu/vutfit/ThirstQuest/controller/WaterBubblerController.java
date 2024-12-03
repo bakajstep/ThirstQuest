@@ -114,7 +114,7 @@ public class WaterBubblerController {
         return "Water Bubbler updated";
     }
 
-    @DeleteMapping("/")
+    @DeleteMapping
     public String deleteWaterBubbler(@RequestBody WaterBubblerIdsDTO request, Authentication authentication) {
         String currentUserEmail = authentication.getName();
 
@@ -160,4 +160,6 @@ public class WaterBubblerController {
                 .map(waterBubblerMapper::toDTO)
                 .toList();
     }
+
+
 }

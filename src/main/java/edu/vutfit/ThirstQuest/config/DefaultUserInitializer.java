@@ -43,9 +43,9 @@ public class DefaultUserInitializer implements CommandLineRunner {
             WaterBubbler waterBubbler = new WaterBubbler();
             waterBubbler.setName("WaterBubbler");
             waterBubbler.setUser(appUserRepository.findByEmail("admin@admin.com"));
-            waterBubblerRepository.save(waterBubbler);
+            WaterBubbler save = waterBubblerRepository.save(waterBubbler);
 
-            System.out.println("Water Bubbler created with name 'WaterBubbler'");
+            System.out.println("Water Bubbler created with name 'WaterBubbler': " + save.getId());
         }
 
     }
