@@ -105,11 +105,17 @@ public class UserService implements UserDetailsService {
             Optional<WaterBubbler> tmpBubbler = watterBubblerRepository.findById(bubblerId);
             bubbler = tmpBubbler.orElse(null);
         } else if (osmID != null) {
-            WaterBubbler waterBubblerByOsm = waterBubblerOsmService.getWaterBubblerByOsmIdFromOsm(osmID);
-            if (waterBubblerByOsm == null) {
-                throw new IllegalArgumentException("WaterBubbler does not exist in OpenStreetMap");
+            WaterBubbler waterBubblerByOsmFromDb = watterBubblerRepository.findByOpenStreetId(osmID).orElse(null);
+            if (waterBubblerByOsmFromDb != null) {
+                bubbler = waterBubblerByOsmFromDb;
             }
-            bubbler = watterBubblerRepository.save(waterBubblerByOsm);
+            else {
+                WaterBubbler waterBubblerByOsm = waterBubblerOsmService.getWaterBubblerByOsmIdFromOsm(osmID);
+                if (waterBubblerByOsm == null) {
+                    throw new IllegalArgumentException("WaterBubbler does not exist in OpenStreetMap");
+                }
+                bubbler = watterBubblerRepository.save(waterBubblerByOsm);
+            }
         }
 
         if (bubbler == null) {

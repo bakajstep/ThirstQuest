@@ -47,14 +47,25 @@ public class ReviewMapper {
                 throw new IllegalArgumentException("WaterBubbler does not exist by id");
             }
             review.setWaterBubbler(waterBubbler);
-        } else if (dto.getWaterBubblerOsmId() != null) {
-            WaterBubbler waterBubblerByOsm = waterBubblerServiceOsm.getWaterBubblerByOsmIdFromOsm(dto.getWaterBubblerOsmId());
-            if (waterBubblerByOsm == null) {
-                throw new IllegalArgumentException("WaterBubbler does not exist in OpenStreetMap");
-            }
-            waterBubblerService.saveWaterBubbler(waterBubblerByOsm);
-            review.setWaterBubbler(waterBubblerByOsm);
+            return review;
         }
+
+        if (dto.getWaterBubblerOsmId() == null) {
+            return review;
+        }
+
+        WaterBubbler waterBubblerByOsmFromDb = waterBubblerService.getWatterBubblerByOpenStreetId(dto.getWaterBubblerOsmId()).orElse(null);
+        if (waterBubblerByOsmFromDb != null) {
+            review.setWaterBubbler(waterBubblerByOsmFromDb);
+            return review;
+        }
+
+        WaterBubbler waterBubblerByOsm = waterBubblerServiceOsm.getWaterBubblerByOsmIdFromOsm(dto.getWaterBubblerOsmId());
+        if (waterBubblerByOsm == null) {
+            throw new IllegalArgumentException("WaterBubbler does not exist in OpenStreetMap");
+        }
+        waterBubblerService.saveWaterBubbler(waterBubblerByOsm);
+        review.setWaterBubbler(waterBubblerByOsm);
 
         return review;
     }

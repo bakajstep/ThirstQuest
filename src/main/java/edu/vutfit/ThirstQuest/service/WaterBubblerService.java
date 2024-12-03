@@ -26,7 +26,12 @@ public class WaterBubblerService {
         List<WaterBubbler> waterBubblers = waterBubblerRepository.findByLongitudeBetweenAndLatitudeBetween(minLon, maxLon, minLat, maxLat);
 
         for (WaterBubbler osmWaterBubbler : osmWaterBubblers) {
-            WaterBubbler existing = waterBubblers.stream().filter(waterBubbler -> waterBubbler.getOpenStreetId() == osmWaterBubbler.getOpenStreetId()).findFirst().orElse(null);
+            WaterBubbler existing = waterBubblers
+                .stream()
+                .filter(waterBubbler -> waterBubbler.getOpenStreetId().equals(osmWaterBubbler.getOpenStreetId()))
+                .findFirst()
+                .orElse(null);
+
             if (existing == null) {
                 waterBubblers.add(osmWaterBubbler);
                 continue;

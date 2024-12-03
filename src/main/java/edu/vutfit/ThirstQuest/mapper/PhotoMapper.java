@@ -51,14 +51,25 @@ public class PhotoMapper {
                 throw new IllegalArgumentException("WaterBubbler does not exist by id");
             }
             photo.setWaterBubbler(waterBubbler);
-        } else if (dto.getWaterBubblerOsmId() != null) {
-            WaterBubbler waterBubblerByOsm = waterBubblerServiceOsm.getWaterBubblerByOsmIdFromOsm(dto.getWaterBubblerOsmId());
-            if (waterBubblerByOsm == null) {
-                throw new IllegalArgumentException("WaterBubbler does not exist in OpenStreetMap");
-            }
-            waterBubblerService.saveWaterBubbler(waterBubblerByOsm);
-            photo.setWaterBubbler(waterBubblerByOsm);
+            return photo;
         }
+
+        if (dto.getWaterBubblerOsmId() == null) {
+            return photo;
+        }
+
+        WaterBubbler waterBubblerByOsmFromDb = waterBubblerService.getWatterBubblerByOpenStreetId(dto.getWaterBubblerOsmId()).orElse(null);
+        if (waterBubblerByOsmFromDb != null) {
+            photo.setWaterBubbler(waterBubblerByOsmFromDb);
+            return photo;
+        }
+
+        WaterBubbler waterBubblerByOsm = waterBubblerServiceOsm.getWaterBubblerByOsmIdFromOsm(dto.getWaterBubblerOsmId());
+        if (waterBubblerByOsm == null) {
+            throw new IllegalArgumentException("WaterBubbler does not exist in OpenStreetMap");
+        }
+        waterBubblerService.saveWaterBubbler(waterBubblerByOsm);
+        photo.setWaterBubbler(waterBubblerByOsm);
 
         return photo;
     }
