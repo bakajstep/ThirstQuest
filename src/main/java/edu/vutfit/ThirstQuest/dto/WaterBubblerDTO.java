@@ -1,8 +1,5 @@
 package edu.vutfit.ThirstQuest.dto;
 
-import edu.vutfit.ThirstQuest.model.Photo;
-import edu.vutfit.ThirstQuest.model.WaterBubbler;
-
 import java.util.List;
 import java.util.UUID;
 

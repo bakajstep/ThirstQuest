@@ -4,8 +4,6 @@ import edu.vutfit.ThirstQuest.dto.WaterBubblerDTO;
 import edu.vutfit.ThirstQuest.model.AppUser;
 import edu.vutfit.ThirstQuest.model.WaterBubbler;
 import edu.vutfit.ThirstQuest.service.UserService;
-import edu.vutfit.ThirstQuest.service.WaterBubblerOSMService;
-import edu.vutfit.ThirstQuest.service.WaterBubblerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -15,15 +13,11 @@ import java.util.stream.Collectors;
 public class WaterBubblerMapper {
 
     private final UserService userService;
-    private final WaterBubblerService waterBubblerService;
-    private final WaterBubblerOSMService waterBubblerServiceOsm;
     private final PhotoMapper photoMapper;
 
     @Autowired
-    public WaterBubblerMapper(UserService userService, WaterBubblerService waterBubblerService, WaterBubblerOSMService waterBubblerServiceOsm, PhotoMapper photoMapper) {
+    public WaterBubblerMapper(UserService userService, PhotoMapper photoMapper) {
         this.userService = userService;
-        this.waterBubblerService = waterBubblerService;
-        this.waterBubblerServiceOsm = waterBubblerServiceOsm;
         this.photoMapper = photoMapper;
     }
 

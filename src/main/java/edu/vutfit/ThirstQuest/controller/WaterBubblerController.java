@@ -69,9 +69,11 @@ public class WaterBubblerController {
 
             WaterBubblerDTO waterBubblerDTO = waterBubblerMapper.toDTO(bubbler)
                     .setDownvoteCount(downvote)
-                    .setUpvoteCount(upvote);
+                    .setUpvoteCount(upvote)
+                    .setFavorite(false)
+                    .setReview(null);
 
-            if (user != null) {
+            if (bubbler.getId() != null && user != null) {
                 Review review = reviewService.findByUserAndWaterBubbler(user, bubbler);
                 if (review != null) {
                     ReviewDTO reviewDTO = reviewMapper.toDTO(review);

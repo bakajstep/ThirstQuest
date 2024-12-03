@@ -39,8 +39,9 @@ public class ReviewService {
     public Review findByUserAndWaterBubbler(AppUser user, WaterBubbler waterBubbler) {
         return reviewRepository.findByUserAndWaterBubbler(user, waterBubbler);
     }
-     public int countByWaterBubblerAndVoteType(WaterBubbler waterBubbler, VoteType voteType) {
+
+    public int countByWaterBubblerAndVoteType(WaterBubbler waterBubbler, VoteType voteType) {
         return reviewRepository.countByWaterBubblerAndVoteType(waterBubbler, voteType);
-     }
+    }
 }
 
