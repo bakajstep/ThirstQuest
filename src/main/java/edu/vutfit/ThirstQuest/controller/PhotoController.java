@@ -6,7 +6,6 @@ import edu.vutfit.ThirstQuest.model.AppUser;
 import edu.vutfit.ThirstQuest.model.Photo;
 import edu.vutfit.ThirstQuest.service.PhotoService;
 import edu.vutfit.ThirstQuest.service.UserService;
-import edu.vutfit.ThirstQuest.service.WaterBubblerOSMService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;

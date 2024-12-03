@@ -4,6 +4,7 @@ import edu.vutfit.ThirstQuest.config.JwtTokenUtil;
 import edu.vutfit.ThirstQuest.dto.AuthRequest;
 import edu.vutfit.ThirstQuest.dto.AuthResponse;
 import edu.vutfit.ThirstQuest.dto.GoogleAuthRequest;
+import edu.vutfit.ThirstQuest.mapper.AppUserMapper;
 import edu.vutfit.ThirstQuest.model.AppUser;
 import edu.vutfit.ThirstQuest.service.UserService;
 
@@ -35,6 +36,9 @@ public class AuthController {
     @Autowired
     private AuthenticationManager authenticationManager;
 
+    @Autowired
+    private AppUserMapper appUserMapper;
+
 
     @PostMapping("/login")
     public AuthResponse login(@RequestBody AuthRequest authRequest) throws AuthenticationException {
@@ -46,7 +50,7 @@ public class AuthController {
         return new AuthResponse(
             JwtTokenUtil.generateToken(userDetails.getUsername()),
             "Bearer",
-            userService.getByEmail(userDetails.getUsername()),
+            appUserMapper.toDTO(userService.getByEmail(userDetails.getUsername())),
             userDetails.getAuthorities().stream().map(a -> a.getAuthority()).toArray(String[]::new)
         );
     }
@@ -63,7 +67,7 @@ public class AuthController {
         return ResponseEntity.ok(new AuthResponse(
             JwtTokenUtil.generateToken(user.getEmail()),
             "Bearer",
-            user,
+            appUserMapper.toDTO(user),
             userDetails.getAuthorities().stream().map(a -> a.getAuthority()).toArray(String[]::new)
         ));
     }
@@ -114,7 +118,7 @@ public class AuthController {
             return ResponseEntity.ok(new AuthResponse(
                 token,
                 "Bearer",
-                user,
+                appUserMapper.toDTO(user),
                 userDetails.getAuthorities().stream().map(a -> a.getAuthority()).toArray(String[]::new)
             ));
         } catch (Exception e) {
@@ -135,7 +139,7 @@ public class AuthController {
         return ResponseEntity.ok(new AuthResponse(
                 token,
                 "Bearer",
-                userService.getByEmail(currentUserEmail),
+                appUserMapper.toDTO(userService.getByEmail(currentUserEmail)),
                 userDetails.getAuthorities().stream().map(a -> a.getAuthority()).toArray(String[]::new)
             ));
     }

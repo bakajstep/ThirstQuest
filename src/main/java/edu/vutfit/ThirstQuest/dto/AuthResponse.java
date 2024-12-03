@@ -1,17 +1,15 @@
 package edu.vutfit.ThirstQuest.dto;
 
-import edu.vutfit.ThirstQuest.model.AppUser;
-
 public class AuthResponse {
     private String token;
     private String schema;
-    private AppUser user;
+    private AppUserDTO user;
     private String[] role;
 
     public AuthResponse() {
     }
 
-    public AuthResponse(String token, String schema, AppUser user, String[] role) {
+    public AuthResponse(String token, String schema, AppUserDTO user, String[] role) {
         this.token = token;
         this.schema = schema;
         this.user = user;
@@ -34,11 +32,11 @@ public class AuthResponse {
         this.schema = schema;
     }
 
-    public AppUser getUser() {
+    public AppUserDTO getUser() {
         return user;
     }
 
-    public void setUser(AppUser user) {
+    public void setUser(AppUserDTO user) {
         this.user = user;
     }
 
