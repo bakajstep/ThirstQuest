@@ -132,4 +132,8 @@ public class AppUser {
     public void setFavoriteBubblers(Set<WaterBubbler> favoriteFountains) {
         this.favoriteBubblers = favoriteFountains;
     }
+
+    public void addFavoriteBubbler(WaterBubbler waterBubbler) {
+        favoriteBubblers.add(waterBubbler);
+    }
 }

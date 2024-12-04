@@ -1,8 +1,13 @@
 package edu.vutfit.ThirstQuest.controller;
 
+import edu.vutfit.ThirstQuest.dto.WaterBubblerDTO;
 import edu.vutfit.ThirstQuest.dto.WaterBubblerIdsDTO;
+import edu.vutfit.ThirstQuest.mapper.WaterBubblerMapper;
 import edu.vutfit.ThirstQuest.model.AppUser;
 import edu.vutfit.ThirstQuest.service.UserService;
+
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -15,8 +20,22 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private WaterBubblerMapper waterBubblerMapper;
+
+    @GetMapping("/favorites")
+    public List<WaterBubblerDTO> getFavoriteWaterBubblers(Authentication authentication) {
+        String currentUserEmail = authentication.getName();
+        AppUser user = userService.getByEmail(currentUserEmail);
+
+        return userService.getFavoriteBubblers(user)
+            .stream()
+            .map(waterBubblerMapper::toDTO)
+            .toList();
+    }
+
     @PostMapping("/favorites")
-    public ResponseEntity<String> addFavoriteFountain(@RequestBody WaterBubblerIdsDTO bubbler, Authentication authentication) {
+    public ResponseEntity<String> addFavoriteWaterBubbler(@RequestBody WaterBubblerIdsDTO bubbler, Authentication authentication) {
         String currentUserEmail = authentication.getName();
         AppUser user = userService.getByEmail(currentUserEmail);
         try {
@@ -28,7 +47,7 @@ public class UserController {
     }
 
     @DeleteMapping("/favorites")
-    public ResponseEntity<String> removeFavoriteFountain(
+    public ResponseEntity<String> removeFavoriteWaterBubbler(
             @RequestBody WaterBubblerIdsDTO request,
             Authentication authentication) {
         String currentUserEmail = authentication.getName();
