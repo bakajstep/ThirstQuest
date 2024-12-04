@@ -37,7 +37,12 @@ public class AppUser {
     @OneToMany(mappedBy = "user")
     private List<Photo> photos;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY,
+        cascade = {
+            CascadeType.PERSIST,
+            CascadeType.MERGE
+        }
+    )
     @JoinTable(
             name = "user_favorites",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -131,5 +136,9 @@ public class AppUser {
 
     public void setFavoriteBubblers(Set<WaterBubbler> favoriteFountains) {
         this.favoriteBubblers = favoriteFountains;
+    }
+
+    public void addFavoriteBubbler(WaterBubbler waterBubbler) {
+        favoriteBubblers.add(waterBubbler);
     }
 }

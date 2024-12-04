@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -23,7 +24,7 @@ public class UserService implements UserDetailsService {
     private AppUserRepository appUserRepository;
 
     @Autowired
-    private WaterBubblerRepository watterBubblerRepository;
+    private WaterBubblerRepository waterBubblerRepository;
 
     @Autowired
     private WaterBubblerOSMService waterBubblerOsmService;
@@ -102,10 +103,10 @@ public class UserService implements UserDetailsService {
     public void addFavoriteBubbler(AppUser user, UUID bubblerId, Long osmID) {
         WaterBubbler bubbler = null;
         if (bubblerId != null) {
-            Optional<WaterBubbler> tmpBubbler = watterBubblerRepository.findById(bubblerId);
+            Optional<WaterBubbler> tmpBubbler = waterBubblerRepository.findById(bubblerId);
             bubbler = tmpBubbler.orElse(null);
         } else if (osmID != null) {
-            WaterBubbler waterBubblerByOsmFromDb = watterBubblerRepository.findByOpenStreetId(osmID).orElse(null);
+            WaterBubbler waterBubblerByOsmFromDb = waterBubblerRepository.findByOpenStreetId(osmID).orElse(null);
             if (waterBubblerByOsmFromDb != null) {
                 bubbler = waterBubblerByOsmFromDb;
             }
@@ -114,7 +115,7 @@ public class UserService implements UserDetailsService {
                 if (waterBubblerByOsm == null) {
                     throw new IllegalArgumentException("WaterBubbler does not exist in OpenStreetMap");
                 }
-                bubbler = watterBubblerRepository.save(waterBubblerByOsm);
+                bubbler = waterBubblerRepository.save(waterBubblerByOsm);
             }
         }
 
@@ -123,11 +124,12 @@ public class UserService implements UserDetailsService {
         }
 
         user.getFavoriteBubblers().add(bubbler);
+
         appUserRepository.save(user);
     }
 
     public void removeFavoriteBubbler(AppUser user, UUID fountainId) {
-        Optional<WaterBubbler> bubbler = watterBubblerRepository.findById(fountainId);
+        Optional<WaterBubbler> bubbler = waterBubblerRepository.findById(fountainId);
 
         if (bubbler.isEmpty()) {
             throw new IllegalArgumentException("WaterBubbler not found");
@@ -138,7 +140,7 @@ public class UserService implements UserDetailsService {
     }
 
     public void removeFavoriteBubblerByOpenStreetId(AppUser user, Long openStreetId) {
-        Optional<WaterBubbler> bubbler = watterBubblerRepository.findByOpenStreetId(openStreetId);
+        Optional<WaterBubbler> bubbler = waterBubblerRepository.findByOpenStreetId(openStreetId);
 
         if (bubbler.isEmpty()) {
             throw new IllegalArgumentException("WaterBubbler not found");
@@ -146,5 +148,9 @@ public class UserService implements UserDetailsService {
 
         user.getFavoriteBubblers().remove(bubbler.get());
         appUserRepository.save(user);
+    }
+
+    public Set<WaterBubbler> getFavoriteBubblers(AppUser user) {
+        return user.getFavoriteBubblers();
     }
 }

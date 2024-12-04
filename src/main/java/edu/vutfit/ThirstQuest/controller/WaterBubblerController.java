@@ -160,6 +160,4 @@ public class WaterBubblerController {
                 .map(waterBubblerMapper::toDTO)
                 .toList();
     }
-
-
 }
