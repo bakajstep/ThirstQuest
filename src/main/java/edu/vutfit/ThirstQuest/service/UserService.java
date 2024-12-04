@@ -124,10 +124,8 @@ public class UserService implements UserDetailsService {
         }
 
         user.getFavoriteBubblers().add(bubbler);
-        bubbler.getUsersWhoFavorited().add(user);
 
         appUserRepository.save(user);
-        waterBubblerRepository.save(bubbler);
     }
 
     public void removeFavoriteBubbler(AppUser user, UUID fountainId) {
