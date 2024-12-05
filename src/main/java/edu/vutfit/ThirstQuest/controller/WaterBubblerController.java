@@ -101,9 +101,19 @@ public class WaterBubblerController {
     }
 
     @PostMapping
-    public String createWaterBubbler(@RequestBody WaterBubblerDTO waterBubbler) {
-        WaterBubbler entity = waterBubblerMapper.toEntity(waterBubbler);
-        waterBubblerService.saveWaterBubbler(entity);
+    public String createWaterBubbler(@RequestBody WaterBubblerDTO waterBubbler, Authentication authentication) {
+        String currentUserEmail = authentication.getName();
+        AppUser user = userService.getByEmail(currentUserEmail);
+
+        WaterBubbler entity = waterBubblerMapper.toEntity(waterBubbler)
+                .setUser(user);
+
+        WaterBubbler bubbler = waterBubblerService.saveWaterBubbler(entity);
+
+        if (waterBubbler.isFavorite()) {
+            user.addFavoriteBubbler(bubbler);
+            userService.updateUser(user);
+        }
         return "Water Bubbler created";
     }
 
@@ -123,6 +133,12 @@ public class WaterBubblerController {
             if (waterBubbler == null) {
                 return "Water bubbler not found";
             }
+
+            for (AppUser user : waterBubbler.getUsersWhoFavorited()) {
+                user.getFavoriteBubblers().remove(waterBubbler);
+            }
+
+            userService.saveAll(waterBubbler.getUsersWhoFavorited());
 
             if (waterBubbler.getUser().getEmail().equals(currentUserEmail) ||
                     authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
