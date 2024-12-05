@@ -28,6 +28,7 @@ public class WaterBubblerService {
         for (WaterBubbler osmWaterBubbler : osmWaterBubblers) {
             WaterBubbler existing = waterBubblers
                 .stream()
+                .filter(waterBubbler -> waterBubbler.getOpenStreetId() != null)
                 .filter(waterBubbler -> waterBubbler.getOpenStreetId().equals(osmWaterBubbler.getOpenStreetId()))
                 .findFirst()
                 .orElse(null);
