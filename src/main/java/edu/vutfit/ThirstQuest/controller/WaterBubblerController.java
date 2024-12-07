@@ -13,9 +13,12 @@ import edu.vutfit.ThirstQuest.service.ReviewService;
 import edu.vutfit.ThirstQuest.service.UserService;
 import edu.vutfit.ThirstQuest.service.WaterBubblerService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -101,20 +104,27 @@ public class WaterBubblerController {
     }
 
     @PostMapping
-    public String createWaterBubbler(@RequestBody WaterBubblerDTO waterBubbler, Authentication authentication) {
+    public ResponseEntity<WaterBubblerDTO> createWaterBubbler(@RequestBody WaterBubblerDTO bubblerDTO, Authentication authentication) {
         String currentUserEmail = authentication.getName();
         AppUser user = userService.getByEmail(currentUserEmail);
 
-        WaterBubbler entity = waterBubblerMapper.toEntity(waterBubbler)
+        WaterBubbler entity = waterBubblerMapper.toEntity(bubblerDTO)
                 .setUser(user);
 
         WaterBubbler bubbler = waterBubblerService.saveWaterBubbler(entity);
 
-        if (waterBubbler.isFavorite()) {
+        if (bubblerDTO.isFavorite()) {
             user.addFavoriteBubbler(bubbler);
             userService.updateUser(user);
         }
-        return "Water Bubbler created";
+
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(bubbler.getId())
+                .toUri();
+
+        return ResponseEntity.created(location).body(waterBubblerMapper.toDTO(bubbler));
     }
 
     @PutMapping("/{id}")
