@@ -14,6 +14,8 @@ public interface ReviewRepository extends JpaRepository<Review, UUID> {
 
     Review findByUserAndWaterBubbler(AppUser user, WaterBubbler waterBubbler);
 
+    Review findByUserEmailAndWaterBubblerId(String email, UUID waterBubblerId);
+
     @Query("SELECT COUNT(r) FROM Review r WHERE r.waterBubbler = :waterBubbler AND r.voteType = :voteType")
     int countByWaterBubblerAndVoteType(@Param("waterBubbler") WaterBubbler waterBubbler, @Param("voteType") VoteType voteType);
 
