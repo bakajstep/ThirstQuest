@@ -1,0 +1,35 @@
+package edu.vutfit.ThirstQuest.dto;
+
+public class ErrorDTO {
+    private String message;
+    private String details;
+
+    // Konstruktor pro jednoduché zprávy
+    public ErrorDTO(String message) {
+        this.message = message;
+    }
+
+    // Konstruktor pro zprávy s detaily
+    public ErrorDTO(String message, String details) {
+        this.message = message;
+        this.details = details;
+    }
+
+    // Gettery a settery
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public String getDetails() {
+        return details;
+    }
+
+    public void setDetails(String details) {
+        this.details = details;
+    }
+}
+
