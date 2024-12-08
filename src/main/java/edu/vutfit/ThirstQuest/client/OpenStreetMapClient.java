@@ -87,7 +87,7 @@ public class OpenStreetMapClient {
                 .setLongitude(lon)
                 .setOpenStreetId(id)
                 .setName(name)
-                .setDesc(desc)
+                .setDescription(desc)
                 .setPhotos(new ArrayList<>());
 
         if (imageUrl != null) {

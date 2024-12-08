@@ -71,7 +71,7 @@ public class WaterBubblerService {
                     bubbler.setName(updatedBubbler.getName());
                     bubbler.setLatitude(updatedBubbler.getLatitude());
                     bubbler.setLongitude(updatedBubbler.getLongitude());
-                    bubbler.setDesc(updatedBubbler.getDesc());
+                    bubbler.setDescription(updatedBubbler.getDescription());
                     return waterBubblerRepository.save(bubbler);
                 }).orElse(null);
     }
