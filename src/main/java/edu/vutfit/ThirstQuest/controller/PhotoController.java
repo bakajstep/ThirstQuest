@@ -49,8 +49,7 @@ public class PhotoController {
     @PostMapping("/upload")
     public ResponseEntity<?> uploadImage(
             @RequestParam("file") MultipartFile file,
-            @RequestParam(value = "waterBubblerId", required = false) UUID waterBubblerId,
-            @RequestParam(value = "waterBubblerOsmId", required = false) Long waterBubblerOsmId,
+            @RequestParam UUID waterBubblerId,
             Authentication authentication
     ) {
         if (file.isEmpty()) {
@@ -62,18 +61,14 @@ public class PhotoController {
                     .body(new ErrorDTO("File size exceeds 5 MB"));
         }
 
-        String fileType = getFileType(file);
-        if (!isValidFileType(fileType)) {
-            return ResponseEntity.badRequest()
-                    .body(new ErrorDTO("Invalid file type. Only JPEG and PNG are allowed."));
-        }
-
         String currentUserEmail = authentication.getName();
         AppUser user = userService.getByEmail(currentUserEmail);
 
         try {
-            PhotoDTO photoDTO = saveFile(file, user, waterBubblerId, waterBubblerOsmId);
-            return ResponseEntity.ok(photoDTO);
+            PhotoDTO photoDTO = saveFile(file, user, waterBubblerId, null);
+            Photo entity = photoMapper.toEntity(photoDTO);
+            Photo photo = photoService.savePhoto(entity);
+            return ResponseEntity.ok(photoMapper.toDTO(photo));
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ErrorDTO("An error occurred while saving the file"));
@@ -93,12 +88,6 @@ public class PhotoController {
             return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE)
                     .body(new ErrorDTO("File size exceeds 5 MB"));
         }
-
-//        String fileType = getFileType(file);
-//        if (!isValidFileType(fileType)) {
-//            return ResponseEntity.badRequest()
-//                    .body(new ErrorDTO("Invalid file type. Only JPEG, PNG and WEBP are allowed."));
-//        }
 
         String currentUserEmail = authentication.getName();
         AppUser user = userService.getByEmail(currentUserEmail);
