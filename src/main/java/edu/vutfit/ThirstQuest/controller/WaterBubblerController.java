@@ -5,19 +5,19 @@ import edu.vutfit.ThirstQuest.dto.WaterBubblerDTO;
 import edu.vutfit.ThirstQuest.dto.WaterBubblerIdsDTO;
 import edu.vutfit.ThirstQuest.mapper.ReviewMapper;
 import edu.vutfit.ThirstQuest.mapper.WaterBubblerMapper;
-import edu.vutfit.ThirstQuest.model.AppUser;
-import edu.vutfit.ThirstQuest.model.Review;
-import edu.vutfit.ThirstQuest.model.VoteType;
-import edu.vutfit.ThirstQuest.model.WaterBubbler;
+import edu.vutfit.ThirstQuest.model.*;
+import edu.vutfit.ThirstQuest.service.PhotoService;
 import edu.vutfit.ThirstQuest.service.ReviewService;
 import edu.vutfit.ThirstQuest.service.UserService;
 import edu.vutfit.ThirstQuest.service.WaterBubblerService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,6 +42,12 @@ public class WaterBubblerController {
 
     @Autowired
     private ReviewMapper reviewMapper;
+
+    @Autowired
+    private PhotoService photoService;
+
+    @Value("${upload.dir}")
+    private String picturePath;
 
     @GetMapping
     public List<WaterBubblerDTO> getAllWaterBubblers(
@@ -147,8 +153,20 @@ public class WaterBubblerController {
             for (AppUser user : waterBubbler.getUsersWhoFavorited()) {
                 user.getFavoriteBubblers().remove(waterBubbler);
             }
-
             userService.saveAll(waterBubbler.getUsersWhoFavorited());
+
+            for (Photo photo : waterBubbler.getPhotos()) {
+                String url = photo.getUrl();
+                String fileName = url.substring(url.lastIndexOf('/') + 1);
+
+                String fullPath = picturePath + fileName;
+                File file = new File(fullPath);
+                if (file.exists()) {
+                    file.delete();
+                }
+
+                photoService.deletePhoto(photo.getId());
+            }
 
             if (waterBubbler.getUser().getEmail().equals(currentUserEmail) ||
                     authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
