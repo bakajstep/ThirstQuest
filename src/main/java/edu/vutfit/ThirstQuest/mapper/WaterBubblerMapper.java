@@ -58,9 +58,11 @@ public class WaterBubblerMapper {
         dto.setLongitude(entity.getLongitude());
         dto.setDescription(entity.getDescription());
 
-        dto.setPhotos(entity.getPhotos().stream()
-            .map(photoMapper::toDTO)
-            .collect(Collectors.toList()));
+        if (entity.getPhotos() != null) {
+            dto.setPhotos(entity.getPhotos().stream()
+                    .map(photoMapper::toDTO)
+                    .collect(Collectors.toList()));
+        }
 
         if (entity.getUser() != null) {
             dto.setUserId(entity.getUser().getId());
