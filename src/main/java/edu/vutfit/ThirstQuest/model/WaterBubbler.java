@@ -27,7 +27,7 @@ public class WaterBubbler {
     @JoinColumn(name = "user_id") // foreign key to User
     private AppUser user;
 
-    @OneToMany(mappedBy = "waterBubbler")
+    @OneToMany(mappedBy = "waterBubbler", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Review> reviews;
 
     @OneToMany(mappedBy = "waterBubbler")
