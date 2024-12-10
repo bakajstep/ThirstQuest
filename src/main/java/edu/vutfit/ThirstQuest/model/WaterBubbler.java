@@ -17,7 +17,7 @@ public class WaterBubbler {
 
     private String name;
 
-    private String desc;
+    private String description;
 
     private double latitude;
 
@@ -27,7 +27,7 @@ public class WaterBubbler {
     @JoinColumn(name = "user_id") // foreign key to User
     private AppUser user;
 
-    @OneToMany(mappedBy = "waterBubbler")
+    @OneToMany(mappedBy = "waterBubbler", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Review> reviews;
 
     @OneToMany(mappedBy = "waterBubbler")
@@ -63,12 +63,12 @@ public class WaterBubbler {
         return this;
     }
 
-    public String getDesc() {
-        return desc;
+    public String getDescription() {
+        return description;
     }
 
-    public WaterBubbler setDesc(String desc) {
-        this.desc = desc;
+    public WaterBubbler setDescription(String desc) {
+        this.description = desc;
         return this;
     }
 

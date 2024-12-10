@@ -28,6 +28,7 @@ public class WaterBubblerService {
         for (WaterBubbler osmWaterBubbler : osmWaterBubblers) {
             WaterBubbler existing = waterBubblers
                 .stream()
+                .filter(waterBubbler -> waterBubbler.getOpenStreetId() != null)
                 .filter(waterBubbler -> waterBubbler.getOpenStreetId().equals(osmWaterBubbler.getOpenStreetId()))
                 .findFirst()
                 .orElse(null);
@@ -70,7 +71,7 @@ public class WaterBubblerService {
                     bubbler.setName(updatedBubbler.getName());
                     bubbler.setLatitude(updatedBubbler.getLatitude());
                     bubbler.setLongitude(updatedBubbler.getLongitude());
-                    bubbler.setDesc(updatedBubbler.getDesc());
+                    bubbler.setDescription(updatedBubbler.getDescription());
                     return waterBubblerRepository.save(bubbler);
                 }).orElse(null);
     }

@@ -40,6 +40,10 @@ public class ReviewService {
         return reviewRepository.findByUserAndWaterBubbler(user, waterBubbler);
     }
 
+    public Review findByUserEmailAndWaterBubblerId(String email, UUID waterBubblerId) {
+        return reviewRepository.findByUserEmailAndWaterBubblerId(email, waterBubblerId);
+    }
+
     public int countByWaterBubblerAndVoteType(WaterBubbler waterBubbler, VoteType voteType) {
         return reviewRepository.countByWaterBubblerAndVoteType(waterBubbler, voteType);
     }

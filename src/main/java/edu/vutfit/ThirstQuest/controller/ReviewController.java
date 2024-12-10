@@ -1,17 +1,21 @@
 package edu.vutfit.ThirstQuest.controller;
 
 import edu.vutfit.ThirstQuest.dto.ReviewDTO;
+import edu.vutfit.ThirstQuest.dto.WaterBubblerIdsDTO;
 import edu.vutfit.ThirstQuest.mapper.ReviewMapper;
 import edu.vutfit.ThirstQuest.model.AppUser;
 import edu.vutfit.ThirstQuest.model.Review;
+import edu.vutfit.ThirstQuest.model.WaterBubbler;
 import edu.vutfit.ThirstQuest.service.ReviewService;
 import edu.vutfit.ThirstQuest.service.UserService;
+import edu.vutfit.ThirstQuest.service.WaterBubblerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -23,6 +27,9 @@ public class ReviewController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private WaterBubblerService waterBubblerService;
 
     @Autowired
     private ReviewMapper reviewMapper;
@@ -44,10 +51,22 @@ public class ReviewController {
         return ResponseEntity.ok("Review created");
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<String> updateReview(@PathVariable UUID id, @RequestBody ReviewDTO updatedReview, Authentication authentication) {
-        Review existingReview = reviewService.getReviewById(id);
+    @PutMapping
+    public ResponseEntity<String> updateReview(@RequestBody ReviewDTO updatedReview, Authentication authentication) {
         String currentUserEmail = authentication.getName();
+
+        Review existingReview = null;
+
+        if (updatedReview.getWaterBubblerId() != null) {
+            existingReview = reviewService.findByUserEmailAndWaterBubblerId(currentUserEmail, updatedReview.getWaterBubblerId());
+        } else if (updatedReview.getWaterBubblerOsmId() != null) {
+            AppUser byEmail = userService.getByEmail(currentUserEmail);
+            Optional<WaterBubbler> watterBubblerByOpenStreetId = waterBubblerService.getWatterBubblerByOpenStreetId(updatedReview.getWaterBubblerOsmId());
+            if (watterBubblerByOpenStreetId.isPresent()) {
+                existingReview = reviewService.findByUserAndWaterBubbler(byEmail, watterBubblerByOpenStreetId.get());
+            }
+        }
+
 
         if (existingReview == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Review not found");
@@ -65,21 +84,33 @@ public class ReviewController {
     }
 
     // Delete review (only the owner or ADMIN can delete)
-    @DeleteMapping("/{id}")
-    public String deleteReview(@PathVariable UUID id, Authentication authentication) {
-        Review review = reviewService.getReviewById(id);
+    @DeleteMapping
+    public ResponseEntity<String> deleteReview(@RequestBody WaterBubblerIdsDTO bubbler, Authentication authentication) {
         String currentUserEmail = authentication.getName();
 
+        Review review = null;
+
+        if (bubbler.getBubblerId() != null) {
+            review = reviewService.findByUserEmailAndWaterBubblerId(currentUserEmail, bubbler.getBubblerId());
+
+        } else if (bubbler.getOpenStreetId() != null) {
+            AppUser byEmail = userService.getByEmail(currentUserEmail);
+            Optional<WaterBubbler> watterBubblerByOpenStreetId = waterBubblerService.getWatterBubblerByOpenStreetId(bubbler.getOpenStreetId());
+            if (watterBubblerByOpenStreetId.isPresent()) {
+                review = reviewService.findByUserAndWaterBubbler(byEmail, watterBubblerByOpenStreetId.get());
+            }
+        }
+
         if (review == null) {
-            return "Review not found";
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Review not found");
         }
 
         // Only allow the owner of the review or an ADMIN to delete it
         if (review.getUser().getEmail().equals(currentUserEmail) || authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
-            reviewService.deleteReview(id);
-            return "Review deleted";
+            reviewService.deleteReview(review.getId());
+            return ResponseEntity.ok("Review deleted");
         }
 
-        return "Unauthorized to delete this review";
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized to update this review");
     }
 }

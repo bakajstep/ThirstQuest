@@ -31,7 +31,7 @@ public class WaterBubblerMapper {
         waterBubbler.setName(dto.getName());
         waterBubbler.setLatitude(dto.getLatitude());
         waterBubbler.setLongitude(dto.getLongitude());
-        waterBubbler.setDesc(dto.getDescription());
+        waterBubbler.setDescription(dto.getDescription());
 
 
         if (dto.getUserId() != null) {
@@ -56,11 +56,13 @@ public class WaterBubblerMapper {
         dto.setName(entity.getName());
         dto.setLatitude(entity.getLatitude());
         dto.setLongitude(entity.getLongitude());
-        dto.setDescription(entity.getDesc());
+        dto.setDescription(entity.getDescription());
 
-        dto.setPhotos(entity.getPhotos().stream()
-            .map(photoMapper::toDTO)
-            .collect(Collectors.toList()));
+        if (entity.getPhotos() != null) {
+            dto.setPhotos(entity.getPhotos().stream()
+                    .map(photoMapper::toDTO)
+                    .collect(Collectors.toList()));
+        }
 
         if (entity.getUser() != null) {
             dto.setUserId(entity.getUser().getId());
