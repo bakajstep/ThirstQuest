@@ -82,7 +82,7 @@ public class WaterBubblerController {
 
                 List<WaterBubbler> list = user.getFavoriteBubblers()
                         .stream()
-                        .filter(b -> b.getId() == bubbler.getId() || b.getOpenStreetId() == bubbler.getOpenStreetId())
+                        .filter(b -> b.getId() == bubbler.getId())
                         .toList();
                 if (!list.isEmpty()) {
                     waterBubblerDTO.setFavorite(true);
